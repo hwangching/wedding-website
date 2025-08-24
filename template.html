@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>我們結婚了!! Jim and Sin</title>
+    <meta charset="utf-8">
+    <meta name="description" content="Save the Date for the wedding of Jim and Sin!"/>
+    <meta property="og:title" content="The Wedding of Jim and Sin">
+    <meta property="og:image" content="images/01.webp">
+    <meta property="og:description" content="Save the Date for the wedding of Jim and Sin!">
+    <meta name="author" content="Ching Hwang,jimhwchs@gmail.com"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex,nofollow">
+
+    <link rel="stylesheet" href="index.css">
+    <script src="index.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <div class="bg" id="homebg"></div>
+    <div class="bg" id="secondbg"></div>
+    <div class="bg" id="thirdbg"></div>
+
+    <div id="music-onoroff">
+        <div>
+            <p>進入網站前，請先選擇<br>是否想搭配音樂瀏覽喜帖？</p>
+            <a href="javascript:void(0)" onclick="music()">是</a>
+            <a href="javascript:void(0)" onclick="document.getElementById('music-onoroff').style.display = 'none';">否</a>
+            <p style="font-size: 12px;">＊之後仍可透過右下角開關音樂唷！</p>
+        </div>
+    </div>
+
+    <div class="music-button" onclick="music()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="15.5" r="2.5"/><path d="M8 17V5l12-2v12"/></svg>
+        <div class="music-off-line" id="music-off-line"></div>
+    </div>
+    <audio loop>
+        <source src="yung kai-blue.mp4" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+
+    <header id="header">
+        <div id="portrait">
+            <div></div>
+            <p>2026.06.13</p>
+        </div>
+        <div id="hometitle">
+            <img src="images/groomca.png" alt="calligraph">
+            <p>AND</p>
+            <img src="images/brideca.png" alt="calligraph">
+        </div>
+        <a href="javascript:void(0)" onclick="JumpTo('intro')">
+            <p>scroll</p>
+            <div id="scroll-line"></div>
+        </a>
+    </header>
+
+    <div id="intro">
+        <div class="introbox">
+            <div class="intropic" id="groompic"></div>
+            <h1>黃靖 Jim</h1>
+            <p class="introtitle">Groom</p>
+            <div class="introline"></div>
+            <p>
+                出生臺灣淡水<br>
+                大學花了95%的時間在球場上<br>
+                個性內向害羞不擅交際
+            </p>
+        </div>
+        <div class="introbox">
+            <div class="intropic" id="bridepic"></div>
+            <h1>陳浩欣 Sin</h1>
+            <p class="introtitle">Bride</p>
+            <div class="introline"></div>
+            <p>
+                出生馬來西亞永平<br>
+                曾拿過全馬華文作文比賽全國第一<br>
+                永平國語文理解比賽第三名
+            </p>
+        </div>
+    </div>
+
+    <div id="invite">
+        <div class="invitepic">
+            <div></div>
+        </div>
+        <div class="invite-content">
+            <div>
+                <div class="name-circle">J<br>&<br>G</div>
+                <h1><b>我們結婚了！</b></h1>
+                <p>
+                    邀請你們<br>
+                    2026.06.13（六）<br>
+                    前往誠品行旅 In Between<br>
+                    與我們一起慶祝
+                </p>
+                <h1 class="invite-title">We're <br>getting married !</h1>
+                <div class="invite-smallpic"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="schedule" class="schedule">
+        <div>
+            <h1>Schedule</h1>
+            <div id="timeline">
+                <div class="time" id="time1">05:30<br>PM</div>
+                <div class="time" id="time3">06:30<br>PM</div>
+                <div class="time" id="time5">09:40<br>PM</div>
+                <div class="activity" id="activity1">迎賓酒會</div>
+                <div class="activity" id="activity3">晚餐</div>
+                <div class="activity" id="activity5">送客合照</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="traffic">
+        <div id="traffic-title">
+            <h1>MAP</h1>
+            <p>誠品行旅 In Between ．110台北市信義區菸廠路98號2樓</p>
+        </div>
+        <div class="traffic-map">
+            <img src="images/map.webp" alt="map">
+            <a href="https://maps.app.goo.gl/96o4k9WgjJGLED2NA" target="_blank">open google maps</a>
+        </div>
+        <div id="guide">
+            <p>  
+                搭乘板南線（藍線）：至捷運國父紀念館站，<br>
+                由5號出口搭乘電梯至地面後，步行約650公尺
+            </p>
+            <p>
+                請將車輛行駛至市民大道與菸廠路交會處，<br>
+                由【誠品行旅專用入口】開抵旅館正門<br>
+                提供嘉賓每輛車4小時免費停車【限飯店地下停車場】
+            </p>
+        </div>
+    </div>
+<!--
+    <div id="dresscode">
+        <div>
+            <h1>Dress Code</h1>
+            <div>
+                <div class="half-circle" id="circle1"></div>
+                white
+            </div>
+            <div>
+                <div class="half-circle" id="circle2"></div>
+                beige
+            </div>
+            <div>
+                <div class="half-circle" id="circle3"></div>
+                grey
+            </div>
+            <div>
+                <div class="half-circle" id="circle4"></div>
+                dark blue
+            </div>
+        </div>
+        <p>誠邀著上述色系服裝出席</p>
+    </div>
+-->
+
+    <div id="photo-video">
+        <h1>Album</h1>
+        <div class="photo"><a href="javascript:void(0)" onclick="showgallery('photo-gallery')">MORE<br>PHOTOS</a></div>
+        
+<!--
+
+        <h1>Video</h1>
+        <div id="video-area">
+            <div id="video-box">
+                <div id="video-opacity" onclick="showgallery('video')"></div>
+                <a href="javascript:void(0)" onclick="showgallery('video')">▶</a>
+            </div>
+        </div>
+-->
+    </div>
+
+    <a href="javascript:void(0)" id="closebutton" onclick="closegallery()">×</a>
+    <div id="gallery">
+        <div id="photo-gallery">
+            <div>
+                <img src="images/01.webp" alt="engagement photo">
+                <img src="images/02.webp" alt="engagement photo">
+                <img src="images/03.webp" alt="engagement photo">
+                <img src="images/04.webp" alt="engagement photo">
+                <img src="images/05.webp" alt="engagement photo">
+                <img src="images/06.webp" alt="engagement photo">
+                <img src="images/07.webp" alt="engagement photo">
+                <img src="images/08.webp" alt="engagement photo">
+                <img src="images/09.webp" alt="engagement photo">
+                <img src="images/10.webp" alt="engagement photo">
+
+            </div>
+            <div>
+                <img src="images/11.webp" alt="engagement photo">
+                <img src="images/12.webp" alt="engagement photo">
+                <img src="images/13.webp" alt="engagement photo">
+                <img src="images/14.webp" alt="engagement photo">
+                <img src="images/15.webp" alt="engagement photo">
+                <img src="images/16.webp" alt="engagement photo">
+                <img src="images/17.webp" alt="engagement photo">
+                <img src="images/18.webp" alt="engagement photo">
+                <img src="images/19.webp" alt="engagement photo">
+                <img src="images/20.webp" alt="engagement photo">
+
+
+            </div>
+            <p>photos by <a href="https://www.instagram.com/naturalgardenimage/" target="_blank">Natural Garden Studio</a></p>
+        </div>
+<!--
+
+        <div id="video">
+            <iframe src="https://player.vimeo.com/video/673620712?h=ecc7a6b934" width="640" height="360" loading="lazy" frameborder="0" allow="autoplay; fullscreen; picture-in-picture"></iframe>
+            <p>video by <a href="https://www.instagram.com/jay.phahphinne/" target="_blank">Jay.phahphinne</a></p>
+        </div>
+-->
+    </div>
+
+    <div class="countdown-area" id="countdown-area">
+        <h1>Countdown</h1>
+
+        <p>距離婚禮還有</p>
+        <div class="countdown-area-box">
+            <div id="days"></div>
+            <div id="hours"></div>
+            <div id="mins"></div>
+            <div id="secs"></div>
+            <p>Days</p>
+            <p>Hours</p>
+            <p>Mins</p>
+            <p>Secs</p>
+        </div>
+        <p>期待與你們見面！</p>
+    </div>
+
+    <div id="RSVP" class="RSVP">
+        <h1>RSVP</h1>
+        <div id="RSVParea">
+            <form id="form1">
+                
+                <label for="yes" class="attend" onclick="AttendFunction('form1')">出席
+                    <input type="radio" id="yes" value="出席" name="ATTEND" checked>
+                    <span></span>
+                </label>
+                <label for="no" class="attend" onclick="AttendFunction('form1')">無法出席
+                    <input type="radio" id="no" class="not-attend-checked" value="無法出席" name="ATTEND">
+                    <span></span>
+                </label>
+
+                <div class="form-grid">
+                    <div class="form-title"><label for="Name">姓名</label></div>
+                    <div>
+                        <input type="text" id="Name" name="NAME">
+                    </div>
+                    <div class="form-title not-attend"><label for="Email">Email（會於婚禮前提醒&餐點確認）</label></div>
+                        <div>
+                        <input class="not-attend" type="email" id="Email" name="EMAIL" placeholder="請輸入 Email">
+                        </div>
+                    <div class="form-title not-attend"><label for="Phone">手機(若email聯繫不到時才會聯絡）</label></div>
+                        <div>
+                        <input class="not-attend" type="phone" id="Phone" name="PHONE" placeholder="請輸入 Email">
+                        </div>
+                    <div class="form-title not-attend">參加人數（包含自己）</div>
+                    <div class="AandK not-attend">
+                        <label for="Adult">大人</label>
+                        <select id="Adult" name="ADULT">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                        <label for="Kid">小孩</label>
+                        <select id="Kid" name="KID">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+
+ <!--               <div class="form-title not-attend veganinput"><label for="Vegan">素食人數</label></div>
+                    <div class="not-attend">
+                        <select id="Vegan" name="VEGAN">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+                    
+                  <div class="form-title"><label for="Invitation">是否需要紙本喜帖</label></div>
+                    <div>
+                        <select id="Invitation" name="INVITATION" onchange="InvitationFunction()">
+                            <option value=""></option>
+                            <option value="需要">需要</option>
+                            <option value="不需要">不需要</option>
+                        </select>
+                    </div>
+
+                    <div class="form-title"><label for="Address">喜帖寄送地址</label></div>
+                    <div>
+                        <input type="text" id="Address" name="ADDRESS" placeholder="請填郵遞區號＋地址">
+                    </div>
+
+                </div>
+                -->  
+                <div class="form-title">LEAVE A MESSAGE</div>
+                <textarea name="MESSAGE" rows="15" cols="20" placeholder="留言祝福我們吧!"></textarea>
+            </form>
+            <input type="button" value="送出" id="submitbutton" onclick="submitform1()">
+
+        </div>
+        
+    </div>
+
+    <div id="submit-success">
+        <div>
+            <h1>感謝填寫！</h1>
+            <div id="countdown"></div>
+            <a href="javascript:void(0)" id="submitokbutton" onclick="submitok()">確認</a>
+        </div>
+    </div>
+
+    <div id="loading">
+        <div id="loader"></div>
+    </div>
+
+    <footer>
+        <a href="javascript:void(0)" onclick="JumpTo('header')">TOP</a>
+        <div>期待與你們見面</div>
+        <div>黃靖 & 浩欣</div>
+    </footer>
+
+</body>
+
+
+</html>
