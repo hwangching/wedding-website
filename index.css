@@ -35,20 +35,37 @@ h1{
     z-index: -99;
 }
 
-#homebg{
-    background-position: 60% 0;
-    background-image: url("images/homebg.webp");
-    z-index: -100;
+
+
+#homebg {
+  background-image: url("images/homebg-desktop.jpeg");
+  background-size: cover;
+  background-position: center;
 }
-#secondbg{
-    background-position: 80% 0;
-    background-image: url("images/secondbg.webp");
-    display: none;
+
+#secondbg {
+  background-image: url("images/secondbg-desktop.jpeg");
+  background-size: cover;
+  background-position: center;
 }
-#thirdbg{
-    background-position: 60% 0;
-    background-image: url("images/thirdbg.webp");
-    display: none;
+
+#thirdbg {
+  background-image: url("images/thirdbg-desktop.jpeg");
+  background-size: cover;
+  background-position: center;
+}
+
+@media screen and (max-aspect-ratio: 4/3) {
+  #homebg {
+    background-image: url("images/homebg-mobile.jpeg");
+  }
+  
+  #secondbg {
+    background-image: url("images/secondbg-mobile.jpeg");
+  }
+  #thirdbg {
+    background-image: url("images/thirdbg-mobile.jpeg");
+  }
 }
 
 #music-onoroff{
@@ -178,7 +195,7 @@ header{
     height: 300px;
     background-position: 50% 50%;
     background-size: cover;
-    background-image: url("images/portrait.webp");
+    background-image: url("images/portrait.jpeg");
 }
 
 
@@ -189,29 +206,44 @@ header{
     left: 50%;
     transform: translate(-50%,0);
 }
-
-#hometitle{
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    top: 49%;
+#hometitle {
+  position: relative;
+  top: -5rem; 
+  text-align: center;
+  color: white;
 }
 
-#hometitle img{
-    width: 60px;
+.names {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 1.2rem; 
 }
 
-#hometitle img:last-of-type{
-    width: 60px;
-    margin-right: 10px;
+.groom-name,
+.bride-name {
+  font-family: "Great Vibes", "Dancing Script", cursive;
+  font-size: 2.4rem; 
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: white;
+}
+
+.names p {
+  font-family: "Times New Roman", serif;
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+  margin: 0;
+}
+
+.wedding-date {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  color: white;
 }
 
 
-#hometitle p{
-    font-size: 10px;
-    padding: 0 30px;
-}
 
 header a{
     text-decoration: none;
@@ -281,7 +313,7 @@ header a p{
     position: absolute;
     width: 220px;
     height: 100px;
-    background-image: url("images/introbg.webp");
+    background-image: url("images/introbg.jpeg");
     background-repeat: no-repeat;
     background-size: contain;
     top: 20%;
@@ -302,7 +334,7 @@ header a p{
     position: absolute;
     width: 220px;
     height: 100px;
-    background-image: url("images/introbg.webp");
+    background-image: url("images/introbg.jpeg");
     background-repeat: no-repeat;
     background-size: contain;
     top: 32%;
@@ -320,14 +352,14 @@ header a p{
 }
 
 #groompic{
-    background-image: url('images/groom.webp');
+    background-image: url('images/groom.jpeg');
     background-position: 50% 50%;
     background-size: cover;
     transform: scaleX(-1);
 }
 
 #bridepic{
-    background-image: url('images/bride.webp');
+    background-image: url('images/bride.jpeg');
     background-position: 50% 50%;
     background-size: cover;
     transform: scaleX(-1);
@@ -411,7 +443,7 @@ header a p{
     margin-right: 90px;
     box-shadow: -20px -20px 0px rgb(216, 207, 199);
     transform: translateY(60px);
-    background-image: url("images/invitepic.webp");
+    background-image: url("images/invitepic.jpeg");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -510,7 +542,7 @@ header a p{
 }
 
 .invite-smallpic{
-    background-image: url("images/invite-smallpic.webp");
+    background-image: url("images/invite-smallpic.jpeg");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 60% 0;
@@ -885,7 +917,7 @@ header a p{
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url("images/photo-cover.webp");
+    background-image: url("images/photo-cover.jpeg");
     width: 200px;
     height: 300px;
     margin: 0 auto 120px auto;
@@ -934,7 +966,7 @@ header a p{
 
 #video-box{
     position: relative;
-    background-image: url("images/01.webp");
+    background-image: url("images/01.jpeg");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
