@@ -38,33 +38,33 @@ h1{
 
 
 #homebg {
-  background-image: url("images/homebg-desktop.jpeg");
+  background-image: url("images_webp/homebg-desktop.webp");
   background-size: cover;
   background-position: center;
 }
 
 #secondbg {
-  background-image: url("images/secondbg-desktop.jpeg");
+  background-image: url("images_webp/secondbg-desktop.webp");
   background-size: cover;
   background-position: center;
 }
 
 #thirdbg {
-  background-image: url("images/thirdbg-desktop.jpeg");
+  background-image: url("images_webp/thirdbg-desktop.webp");
   background-size: cover;
   background-position: center;
 }
 
 @media screen and (max-aspect-ratio: 4/3) {
   #homebg {
-    background-image: url("images/homebg-mobile.jpeg");
+    background-image: url("images_webp/homebg-mobile.webp");
   }
   
   #secondbg {
-    background-image: url("images/secondbg-mobile.jpeg");
+    background-image: url("images_webp/secondbg-mobile.webp");
   }
   #thirdbg {
-    background-image: url("images/thirdbg-mobile.jpeg");
+    background-image: url("images_webp/thirdbg-mobile.webp");
   }
 }
 
@@ -195,7 +195,7 @@ header{
     height: 300px;
     background-position: 50% 50%;
     background-size: cover;
-    background-image: url("images/portrait.jpeg");
+    background-image: url("images_webp/portrait.webp");
 }
 
 
@@ -313,7 +313,7 @@ header a p{
     position: absolute;
     width: 220px;
     height: 100px;
-    background-image: url("images/introbg.jpeg");
+    background-image: url("images_webp/introbg.webp");
     background-repeat: no-repeat;
     background-size: contain;
     top: 20%;
@@ -334,7 +334,7 @@ header a p{
     position: absolute;
     width: 220px;
     height: 100px;
-    background-image: url("images/introbg.jpeg");
+    background-image: url("images_webp/introbg.webp");
     background-repeat: no-repeat;
     background-size: contain;
     top: 32%;
@@ -352,14 +352,14 @@ header a p{
 }
 
 #groompic{
-    background-image: url('images/groom.jpeg');
+    background-image: url('images_webp/groom.webp');
     background-position: 50% 50%;
     background-size: cover;
     transform: scaleX(-1);
 }
 
 #bridepic{
-    background-image: url('images/bride.jpeg');
+    background-image: url('images_webp/bride.webp');
     background-position: 50% 50%;
     background-size: cover;
     transform: scaleX(-1);
@@ -443,7 +443,7 @@ header a p{
     margin-right: 90px;
     box-shadow: -20px -20px 0px rgb(216, 207, 199);
     transform: translateY(60px);
-    background-image: url("images/invitepic.jpeg");
+    background-image: url("images_webp/invitepic.webp");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -456,7 +456,7 @@ header a p{
 
 .invite-content > div{
     position: relative;
-    color: rgb(222, 211, 201);
+    color: rgb(172, 163, 155);
     background-color: rgb(255, 255, 255);
     border-radius: 200px 200px 0 0;
     padding: 70px 40px 50px 40px;
@@ -542,7 +542,7 @@ header a p{
 }
 
 .invite-smallpic{
-    background-image: url("images/invite-smallpic.jpeg");
+    background-image: url("images_webp/invite-smallpic.webp");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 60% 0;
@@ -917,7 +917,7 @@ header a p{
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url("images/photo-cover.jpeg");
+    background-image: url("images_webp/photo-cover.webp");
     width: 200px;
     height: 300px;
     margin: 0 auto 120px auto;
@@ -966,7 +966,7 @@ header a p{
 
 #video-box{
     position: relative;
-    background-image: url("images/01.jpeg");
+    background-image: url("images_webp/01.webp");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
