@@ -1,18 +1,24 @@
 function music(){
-    let musiconoroff = document.getElementById('music-onoroff'),
-    musicoffline = document.getElementById('music-off-line'),
-    themusic = document.querySelector("audio");
+  const musiconoroff = document.getElementById('music-onoroff');
+  const musicoffline = document.getElementById('music-off-line');
+  const themusic = document.getElementById('bgm');
 
-    if (themusic.paused) {
-        themusic.play();
+  if (themusic.paused) {
+    themusic.play()
+      .then(() => {
         musicoffline.classList.add("playmusic");
         musiconoroff.style.display = "none";
-    }
-    else {
-        themusic.pause();
-        musicoffline.classList.remove("playmusic");
-    }
+      })
+      .catch(err => {
+        console.warn("音樂播放被瀏覽器拒絕：", err);
+        alert("瀏覽器阻擋了自動播放，請再點一次「是」開啟音樂");
+      });
+  } else {
+    themusic.pause();
+    musicoffline.classList.remove("playmusic");
+  }
 }
+
 
 function JumpTo(id) {
     var jumpto = document.getElementById(id);
