@@ -218,7 +218,7 @@ function submitform1(){
         
         $.ajax({
           type: "get",
-          url: "https://script.google.com/macros/s/AKfycbwjmNKjWdtygu46frjvRbkFXdaTbAIRU3X-bbUa1R2rnlX_1gOVjmy0bPcL234PFaKf/exec",
+          url: "https://script.google.com/macros/s/AKfycbxPq4ys7M8TJXYp_yZ3TXUJRKi4aeWeFKuQ1wLGG_kWGQJVngh5_Bx0UM6sKN5xTSwK/exec",
           data: {
             "SUBMITTIME": SUBMITTIME, 
             "NAME": NAME, 
