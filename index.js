@@ -27,7 +27,7 @@ function JumpTo(id) {
 
 //
 function reveal(){
-    var reveals = document.querySelectorAll(".countdown-area-box>div,.half-circle,.traffic-map,.time,.invite-content p,.invite-content h1,.introbox p,.introbox h1,.introline")
+    var reveals = document.querySelectorAll(".countdown-area-box>div,.half-circle,.traffic-map,.time,.invite-content p,.invite-content h1,.introbox p,.introbox h1,.introline,.sibling-bubble")
     for (var i = 0; i < reveals.length; i++){
         var windowHeight = window.innerHeight;
         var elementTop = reveals[i].getBoundingClientRect().top;
@@ -161,6 +161,7 @@ function submitform1(){
     ADULT = Form1["ADULT"].value,
     KID = Form1["KID"].value,
     PHONE = Form1["PHONE"].value,
+    TRAFFIC = Form1["TRAFFIC"].value,
     // VEGAN = Form1["VEGAN"].value,
     //INVITATION = Form1["INVITATION"].value,
     //ADDRESS = Form1["ADDRESS"].value,
@@ -178,6 +179,10 @@ function submitform1(){
     } else if( ATTEND === "出席" && PHONE === "" ){
         document.getElementById('Phone').scrollIntoView({ block: 'center' , behavior: 'smooth' });
         alert('請填寫聯絡電話');
+    } else if( TRAFFIC === "" ){
+        document.getElementById('Traffic').scrollIntoView({ block: 'center' , behavior: 'smooth' });
+        alert('請問預計要如何抵達');
+    
     // } else if( VEGAN === "" ){
     //     document.getElementById('Vegan').scrollIntoView({ block: 'center' , behavior: 'smooth' });
     //     alert('請問是否有素食需求');
@@ -221,6 +226,7 @@ function submitform1(){
             "ADULT": ADULT, 
             "KID": KID,
             "PHONE": PHONE,
+            "TRAFFIC": TRAFFIC, 
             //"VEGAN": VEGAN,
             // "INVITATION": INVITATION,
             // "ADDRESS": ADDRESS,

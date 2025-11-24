@@ -1490,3 +1490,100 @@ footer div a:hover, footer div a:active{
     #circle3{ transition-delay: 0.7s; }
     #circle4{ transition-delay: 1s; }
 }
+
+.sibling-bubble{
+    margin-top: 15px;
+    padding: 18px 22px;
+    border-radius: 16px;
+    background-color: #ffffff;
+    color: #6e645c;
+    position: relative;
+    line-height: 1.9;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+
+    opacity: 0;
+    transform: translateY(50px);
+    transition: .8s;
+}
+
+.sibling-bubble.active{
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.sibling-bubble::after{
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background-color: #ffffff;
+    bottom: -8px;
+    left: 40px;
+    transform: rotate(45deg);
+}
+
+.sibling-bubble.brother{
+    margin-right: auto;
+}
+
+.sibling-bubble.sister{
+    margin-left: auto;
+}
+
+.sibling-bubble.sister::after{
+    left: auto;
+    right: 40px;
+}
+
+.sibling-name{
+    margin-top: 10px;
+    font-size: 14px;
+    color: rgba(80,70,65,0.6);
+    text-align: left;
+}
+
+.introbox:last-child .sibling-name{
+    text-align: right;
+}
+
+.sibling-label{
+    margin-top: 20px;
+    margin-bottom: 20px; 
+    font-size: 14px; 
+    color: rgba(80,70,65,0.6); 
+    text-align: left; 
+    line-height: 1.5; 
+    letter-spacing: 1px; 
+    text-indent: 0; 
+    padding: 0 20px;
+}
+
+.introbox:last-child .sibling-label{
+    text-align: right; 
+}
+
+@media screen and (max-width: 600px){
+
+    .sibling-label{
+        text-align: left;
+        font-size: 13px;
+        margin-top: 15px; 
+        margin-bottom: 15px;
+        padding: 0 10px;
+    }
+    
+    .introbox:last-child .sibling-label{
+        text-align: right;
+    }
+}
+
+@media screen and (max-width: 768px){ 
+    #guide{
+        padding: 30px 10px;
+    }
+    #guide p{
+        padding: 15px 15px;
+        line-height: 1.7; 
+        font-size: 14px;
+    }
+}
