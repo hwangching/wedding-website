@@ -38,9 +38,14 @@ h1{
 
 
 #homebg {
+  display: block;
   background-image: url("images_webp/homebg-desktop.webp");
   background-size: cover;
   background-position: center;
+}
+
+#secondbg, #thirdbg {
+    display: none;
 }
 
 #secondbg {
@@ -1578,12 +1583,19 @@ footer div a:hover, footer div a:active{
 }
 
 @media screen and (max-width: 768px){ 
+    #traffic-title h1 {
+        font-size: 20px; 
+    }
+    #traffic-title > p {
+        font-size: 14px; 
+    }
+
     #guide{
         padding: 30px 10px;
     }
     #guide p{
         padding: 15px 15px;
-        line-height: 1.7; 
-        font-size: 14px;
+        line-height: 1.7;
+        font-size: 14px; 
     }
 }

@@ -40,7 +40,7 @@ function reveal(){
     }
 }
 window.addEventListener("scroll",reveal)
-
+reveal();
 //
 function revealbg2(){
     var revealbg2 = document.querySelectorAll(".schedule")
