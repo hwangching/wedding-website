@@ -269,7 +269,7 @@ function submitok(){
 }
 
 //
-var TheDay = new Date("June 13, 2026 12:00:00").getTime();
+var TheDay = new Date("June 6, 2026 12:00:00").getTime();
 
 var x = setInterval(function() {
 
@@ -294,3 +294,72 @@ var x = setInterval(function() {
     document.getElementById("countdown").innerHTML = "LET'S CELEBRATE !";
   }
 }, 1000);
+
+
+const eventConfig = {
+    title: "Wedding: Ching & Sin",
+    description: "我們結婚了！邀請您前往美國度假村 Club63 與我們一起慶祝。\nSchedule:\n10:30 AM 證婚儀式\n11:45 AM 賓客入場\n12:00 PM 午宴開始",
+    location: "美國度假村 Club63, 台北市士林區凱旋路61巷2弄2號",
+    // Start: June 6, 2026, 10:30 AM (Taipei Time is UTC+8)
+    // Converted to UTC: June 6, 2026, 02:30 AM
+    startUTC: "20260606T023000Z",
+    // End: June 6, 2026, 03:30 PM (Taipei Time is UTC+8)
+    // Converted to UTC: June 6, 2026, 07:30 AM
+    endUTC: "20260606T073000Z"
+};
+
+/**
+ * Open Google Calendar Add Event URL
+ */
+function addToGoogleCalendar() {
+    const baseUrl = "https://calendar.google.com/calendar/render?action=TEMPLATE";
+    const text = `&text=${encodeURIComponent(eventConfig.title)}`;
+    const dates = `&dates=${eventConfig.startUTC}/${eventConfig.endUTC}`;
+    const details = `&details=${encodeURIComponent(eventConfig.description)}`;
+    const location = `&location=${encodeURIComponent(eventConfig.location)}`;
+    
+    const fullUrl = `${baseUrl}${text}${dates}${details}${location}`;
+    window.open(fullUrl, '_blank');
+}
+
+/**
+ * Generate and download ICS file for Apple/Outlook
+ */
+function downloadICS() {
+    // Format current time for DTSTAMP
+    const now = new Date();
+    const dtStamp = now.toISOString().replace(/[-:]|\.\d{3}/g, '');
+
+    // Construct ICS file content
+    const icsContent = `
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//ChingAndSin//Wedding//EN
+BEGIN:VEVENT
+UID:${Date.now()}@chingandsin.wedding
+DTSTAMP:${dtStamp}
+DTSTART:${eventConfig.startUTC}
+DTEND:${eventConfig.endUTC}
+SUMMARY:${eventConfig.title}
+DESCRIPTION:${eventConfig.description.replace(/\n/g, '\\n')}
+LOCATION:${eventConfig.location}
+END:VEVENT
+END:VCALENDAR`.trim();
+
+    // Create blob and download link
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', 'Wedding_Ching_Sin.ics');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Bind the click event for the ICS button after DOM loads
+document.addEventListener("DOMContentLoaded", function() {
+    const icsBtn = document.getElementById("ics-download-btn");
+    if (icsBtn) {
+        icsBtn.addEventListener("click", downloadICS);
+    }
+});

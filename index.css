@@ -1599,3 +1599,33 @@ footer div a:hover, footer div a:active{
         font-size: 14px; 
     }
 }
+
+
+.calendar-icons {
+    margin-top: 35px;
+    display: flex;
+    justify-content: center;
+    gap: 40px; /* 增加一點圖示之間的距離 */
+    position: relative;
+    z-index: 10;
+}
+
+.calendar-icons a {
+    display: block;
+    transition: transform 0.3s ease;
+    /* 移除之前的顏色設定，因為圖片自帶顏色 */
+}
+
+.calendar-icons img {
+    width: 55px; /* 設定一個合適的大小 */
+    height: auto; /* 維持比例 */
+    display: block;
+    /* 添加一點點陰影讓圖示更有立體感，突顯於背景之上 */
+    filter: drop-shadow(0 4px 6px rgba(104, 97, 92, 0.3));
+    border-radius: 12px; /* 確保 Apple 圖示的圓角看起來滑順 */
+}
+
+.calendar-icons a:hover {
+    transform: scale(1.15) translateY(-5px); /* 稍微放大並上浮 */
+    cursor: pointer;
+}
