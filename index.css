@@ -1601,31 +1601,49 @@ footer div a:hover, footer div a:active{
 }
 
 
+/* --- 強制修正版 Calendar Icons Styles --- */
+
 .calendar-icons {
-    margin-top: 35px;
-    display: flex;
-    justify-content: center;
-    gap: 40px; /* 增加一點圖示之間的距離 */
+    /* 1. 強制水平排列 */
+    display: flex !important;        
+    flex-direction: row !important;  /* 關鍵：強制變成橫向的一列 */
+    justify-content: center;         /* 水平置中 */
+    align-items: center;             /* 垂直置中 */
+    gap: 30px;                       /* 兩個圖示之間的距離 */
+    
+    /* 確保容器寬度足夠，避免被擠壓 */
+    width: 100%;                     
+    margin-top: 30px;
     position: relative;
     z-index: 10;
 }
 
 .calendar-icons a {
-    display: block;
-    transition: transform 0.3s ease;
-    /* 移除之前的顏色設定，因為圖片自帶顏色 */
+    /* 確保連結不會變成區塊元素佔據整行 */
+    display: inline-block;
+    text-decoration: none;
+    
+    /* 移除可能存在的任何邊距 */
+    margin: 0;
+    padding: 0;
 }
 
 .calendar-icons img {
-    width: 55px; /* 設定一個合適的大小 */
-    height: auto; /* 維持比例 */
+    /* 2. 強制統一大小 */
+    width: 50px !important;    /* 設定固定寬度 */
+    height: 50px !important;   /* 設定固定高度 */
+    
+    /* 確保圖片維持比例塞滿框框 */
+    object-fit: contain;       
+    
+    /* 裝飾樣式 */
     display: block;
-    /* 添加一點點陰影讓圖示更有立體感，突顯於背景之上 */
-    filter: drop-shadow(0 4px 6px rgba(104, 97, 92, 0.3));
-    border-radius: 12px; /* 確保 Apple 圖示的圓角看起來滑順 */
+    border-radius: 12px;       /* 圓角 */
+    filter: drop-shadow(0 4px 6px rgba(104, 97, 92, 0.3)); /* 陰影 */
+    transition: transform 0.3s ease;
 }
 
-.calendar-icons a:hover {
-    transform: scale(1.15) translateY(-5px); /* 稍微放大並上浮 */
-    cursor: pointer;
+/* 滑鼠互動效果 */
+.calendar-icons a:hover img {
+    transform: scale(1.15) translateY(-5px);
 }
