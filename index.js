@@ -298,7 +298,7 @@ var x = setInterval(function() {
 
 const eventConfig = {
     title: "Wedding: Ching & Sin",
-    description: "我們結婚了！邀請您前往美國度假村 Club63 與我們一起慶祝。\nSchedule:\n10:30 AM 證婚儀式\n11:45 AM 賓客入場\n12:00 PM 午宴開始",
+    description: "我們結婚了！\n邀請您前往美國度假村 Club63 與我們一起慶祝。\n婚宴細節請參考： https://hchs.site/",
     location: "美國度假村 Club63, 台北市士林區凱旋路61巷2弄2號",
     // Start: June 6, 2026, 10:30 AM (Taipei Time is UTC+8)
     // Converted to UTC: June 6, 2026, 02:30 AM
