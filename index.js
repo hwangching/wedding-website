@@ -217,7 +217,7 @@ function submitform1(){
         document.getElementById('loading').style.display = "block";
         
         $.ajax({
-          type: "get",
+          type: "POST",
           url: "https://script.google.com/macros/s/AKfycbxPq4ys7M8TJXYp_yZ3TXUJRKi4aeWeFKuQ1wLGG_kWGQJVngh5_Bx0UM6sKN5xTSwK/exec",
           data: {
             "SUBMITTIME": SUBMITTIME, 
@@ -227,12 +227,10 @@ function submitform1(){
             "KID": KID,
             "PHONE": PHONE,
             "TRAFFIC": TRAFFIC, 
-            //"VEGAN": VEGAN,
-            // "INVITATION": INVITATION,
-            // "ADDRESS": ADDRESS,
             "EMAIL": EMAIL,
             "MESSAGE": MESSAGE,
           },
+          contentType: "application/x-www-form-urlencoded",
           dataType: "JSON",
           success: function(response){
             console.log("後端回傳成功內容:", response);
@@ -244,10 +242,16 @@ function submitform1(){
           },
           error: function(xhr, status){
             var errorMsg = xhr.status;
-            if(errorMsg === 0){
-                alert('異常！請再試一次');
-            } else{
-                alert (xhr.status + ':' +xhr.statusText);
+            console.error("狀態碼:", errorMsg);
+            if (xhr.status === 200) {
+                submitform();
+            } else {
+                var errorMsg = xhr.status;
+                if(errorMsg === 0){
+                    alert('網路異常！請檢查連線後再試一次');
+                } else{
+                    alert ('傳送失敗 (' + xhr.status + ')');
+                }
             }
           },
           complete: function(){
