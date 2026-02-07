@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Live Wall</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #f5f5f7;
+        }
+
+        #app {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Background Layer (Subtle) */
+        #bg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f0f0f0;
+            z-index: 0;
+        }
+
+        /* Marquee Container */
+        .marquee-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            /* 3 Rows distributed */
+            padding: 2vh 0;
+            box-sizing: border-box;
+        }
+
+        .track {
+            display: flex;
+            width: max-content;
+            gap: 15vh;
+            /* Large gap for low density */
+            padding: 0 1vw;
+            will-change: transform;
+            align-items: center;
+            height: 100%;
+        }
+
+        .photo-card {
+            flex-shrink: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fff;
+            position: relative;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            width: auto;
+            height: 100%;
+            aspect-ratio: auto;
+        }
+
+        .photo-card img {
+            display: block;
+            height: 100%;
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* Variable Height Classes */
+        .photo-card.h-100 {
+            height: 100%;
+        }
+
+        .photo-card.h-90 {
+            height: 90%;
+        }
+
+        .photo-card.h-80 {
+            height: 80%;
+        }
+
+        .photo-card.h-70 {
+            height: 70%;
+        }
+
+        .photo-card.h-60 {
+            height: 60%;
+        }
+
+        /* Vertical Alignment Classes */
+        .photo-card.align-start {
+            align-self: flex-start;
+        }
+
+        .photo-card.align-center {
+            align-self: center;
+        }
+
+        .photo-card.align-end {
+            align-self: flex-end;
+        }
+
+
+        /* Row Heights - 3 Rows */
+        .track-row-1 {
+            height: 28vh;
+        }
+
+        .track-row-2 {
+            height: 36vh;
+        }
+
+        .track-row-3 {
+            height: 28vh;
+        }
+
+
+        /* Danmaku Layer */
+        #danmaku-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 20;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        /* Tag Style Message */
+        .danmaku-item {
+            position: absolute;
+            white-space: nowrap;
+            color: #333;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            font-family: "Noto Serif TC", serif;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            will-change: transform;
+        }
+
+        .danmaku-item img.avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ddd;
+        }
+
+        .danmaku-item.h1 {
+            background: rgba(255, 248, 225, 0.98);
+            border: 1px solid #ffe082;
+            color: #f57f17;
+            font-weight: bold;
+            z-index: 30;
+        }
+
+        .qr-code {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 10px;
+            z-index: 50;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .qr-code img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .qr-code p {
+            margin: 5px 0 0 0;
+            font-size: 12px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        #empty-state {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f5f5f7;
+            color: #999;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="bg-layer"></div>
+
+        <div id="empty-state">
+            <h1>Waiting for photos...</h1>
+        </div>
+
+        <div class="marquee-container" id="marquee-container" style="opacity: 0;">
+            <div class="track track-row-1" id="track-1"></div>
+            <div class="track track-row-2" id="track-2"></div>
+            <div class="track track-row-3" id="track-3"></div>
+        </div>
+
+        <div id="danmaku-layer"></div>
+
+        <div class="qr-code">
+            <p>Scan to Upload</p>
+        </div>
+    </div>
+
+    <script type="module" src="/src/live.js"></script>
+</body>
+
+</html>

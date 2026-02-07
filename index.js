@@ -367,3 +367,14 @@ document.addEventListener("DOMContentLoaded", function() {
         icsBtn.addEventListener("click", downloadICS);
     }
 });
+
+// Expose functions to window for onclick events
+window.music = music;
+window.JumpTo = JumpTo;
+window.showgallery = showgallery;
+window.closegallery = closegallery;
+window.AttendFunction = AttendFunction;
+window.submitform1 = submitform1;
+window.submitok = submitok;
+window.addToGoogleCalendar = addToGoogleCalendar;
+window.downloadICS = downloadICS;
