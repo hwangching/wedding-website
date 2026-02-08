@@ -38,51 +38,51 @@ const initLIFF = async () => {
 // Handle File Selection
 fileInput.addEventListener('change', async (e) => {
     const files = Array.from(e.target.files);
-    if (files.length + selectedFiles.length > 20) {
-        alert('最多只能上傳 20 張照片');
+
+    // Enforce strictly 1 photo
+    if (files.length > 1) {
+        alert('一次只能上傳 1 張照片');
+        fileInput.value = '';
         return;
     }
 
+    if (files.length === 0) return;
+
+    // Reset previous selection (User wants only 1 photo total)
+    selectedFiles = [];
+    previewArea.innerHTML = '';
+
     loadingOverlay.style.display = 'flex';
 
-    for (const file of files) {
-        // Basic Preview first? Or compress first?
-        // Requirement 3.2 A.2: Compress on onChange or Submit.
-        // Let's compress immediately to save memory and show preview of compressed output?
-        // Actually showing preview of original is faster.
+    // Process the single file
+    const file = files[0];
 
-        // Let's store the original file for now, compress on submit? 
-        // Or compress now. "Loading State: 壓縮與上傳過程中，必須顯示 Loading Spinner".
-        // If we compress now, user waits. If on submit, user waits longer then.
-        // Requirement says "壓縮邏輯...在 onChange 事件或 Submit 前觸發".
-        // Let's compress on change.
+    try {
+        const options = {
+            maxSizeMB: 0.8,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true
+        };
+        const compressedFile = await imageCompression(file, options);
+        selectedFiles.push(compressedFile);
 
-        try {
-            const options = {
-                maxSizeMB: 0.8,
-                maxWidthOrHeight: 1920,
-                useWebWorker: true
-            };
-            const compressedFile = await imageCompression(file, options);
-            selectedFiles.push(compressedFile);
+        // Render Preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const div = document.createElement('div');
+            div.className = 'preview-item';
+            div.innerHTML = `<img src="${e.target.result}">`;
+            previewArea.appendChild(div);
+        };
+        reader.readAsDataURL(compressedFile);
 
-            // Render Preview
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const div = document.createElement('div');
-                div.className = 'preview-item';
-                div.innerHTML = `<img src="${e.target.result}">`;
-                previewArea.appendChild(div);
-            };
-            reader.readAsDataURL(compressedFile);
-
-        } catch (error) {
-            console.error('Compression failed', error);
-        }
+    } catch (error) {
+        console.error('Compression failed', error);
+        alert('照片處理失敗，請重試');
     }
 
     loadingOverlay.style.display = 'none';
-    fileInput.value = ''; // Reset input to allow adding more of same file if needed (though unlikely)
+    fileInput.value = '';
 });
 
 // Submit Form
@@ -106,14 +106,16 @@ window.submitForm = async () => {
     try {
         const photoUrls = [];
 
-        // Upload images to Storage
-        for (const file of selectedFiles) {
+        // Upload images to Storage in Parallel
+        const uploadPromises = selectedFiles.map(async (file) => {
             const fileName = `wishes/${Date.now()}_${Math.random().toString(36).substring(7)}_${file.name}`;
             const storageRef = ref(storage, fileName);
             const snapshot = await uploadBytes(storageRef, file);
-            const downloadURL = await getDownloadURL(snapshot.ref);
-            photoUrls.push(downloadURL);
-        }
+            return await getDownloadURL(snapshot.ref);
+        });
+
+        const uploadedUrls = await Promise.all(uploadPromises);
+        photoUrls.push(...uploadedUrls);
 
         // Save metadata to Firestore
         await addDoc(collection(db, 'wishes'), {
