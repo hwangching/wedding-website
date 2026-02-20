@@ -1,111 +1,109 @@
-# Wedding Live Wall & Gallery
+# Wedding Website & Live Wall
 
-這是一個專為婚禮設計的即時照片牆應用程式，包含賓客上傳頁面與現場投影的即時輪播牆。
+這是一個專為婚禮設計的綜合型網頁應用程式，包含**婚禮官方網站首頁**、**賓客座位管理系統**、**賓客上傳頁面**與現場投影的**即時動態牆**。
 
 ## 功能特色 (Features)
 
-*   **賓客上傳頁面 (`/upload.html`)**:
+*   **🤵 首頁 (`/index.html`)**:
+    *   婚禮資訊展示與倒數計時。
+    *   整合 Spotify 等背景音樂播放。
+
+*   **🪑 座位管理系統 (Admin Seat Manager - `/admin.html`)**:
+    *   後台介面，需密碼登入保護。
+    *   **視覺化排座位**：可自由新增長桌或圓桌，透過拖拉 (Drag-and-Drop) 安排賓客座位。
+    *   **場地拖拉模式**：根據真實場地平面圖，自由擺放桌次位置。
+    *   **Google Sheets 同步**：名單與座位資料存放於 Google 試算表，支援讀取草稿與正式發佈功能。
+
+*   **📸 賓客上傳頁面 (`/upload.html`)**:
     *   整合 **LINE Login (LIFF)** 自動帶入賓客暱稱。
-    *   支援多張照片同時上傳。
-    *   **客戶端圖片壓縮**，節省流量並加快上傳速度。
+    *   支援多張照片同時上傳與本地圖片壓縮。
     *   即時上傳至 Firebase Storage 與 Firestore。
 
-*   **即時動態牆 (`/live.html`)**:
-    *   **Masonry 瀑布流佈局**：三列橫向滾動，照片大小錯落有致。
-    *   **不裁切展示**：保留照片原始比例，完整呈現每一張畫面。
-    *   **彈幕留言 (Danmaku)**：賓客祝福語以「標籤」形式緩慢飄過，不遮擋照片。
-    *   **即時更新**：透過 Firestore 監聽，新照片會即時加入輪播。
-    *   **Demo 模式**：支援無後端預覽模式 (`?demo=true`)。
+*   **📺 即時動態牆 (`/live.html`)**:
+    *   **Masonry 瀑布流佈局**，保留照片原始比例不裁切。
+    *   **彈幕留言 (Danmaku)**：賓客祝福語以「隨機幾何圖形」頭像緩慢飄過，不遮擋照片。
+    *   即時監聽 Firestore，新留言與照片會立刻加入輪播。
 
 ## 專案架構 (Architecture)
 
-本專案使用 **Vite** 作為建置工具，並採用現代化前端技術：
+本專案使用 **Vite** 作為建置工具，並採用現代化前端技術，無依賴大型前端框架：
 
 *   **Framework**: Vanilla JS + Vite (Multi-page App)
-*   **Backend**: Firebase (Firestore Database, Cloud Storage)
+*   **Database (Photos)**: Firebase (Firestore, Cloud Storage)
+*   **Database (Seating)**: Google Apps Script + Google Sheets
 *   **Authentication**: LINE LIFF (Login integration)
 *   **Animations**: GSAP (GreenSock Animation Platform)
-*   **Styling**: CSS3 (Flexbox, CSS Variables)
+*   **CI/CD**: GitHub Actions (部署至 GitHub Pages)
 
 ### 檔案結構
 ```
 .
 ├── src/
+│   ├── admin.js       # 座位管理系統邏輯 (Drag & Drop, GAS API)
 │   ├── upload.js      # 上傳頁面邏輯 (LIFF, 壓縮, 上傳)
 │   ├── live.js        # 動態牆邏輯 (Marquee, Danmaku, Animation)
 │   └── firebase.js    # Firebase 初始化設定
+├── public/            # 靜態資源 (不經 Vite 打包，直接輸出至根目錄)
+│   ├── images_webp/   # 圖片、底圖資源
+│   └── CNAME          # 自定義網域設定檔
+├── .github/workflows/ # GitHub Actions 自動部署腳本
+├── index.html         # 婚禮首頁
+├── admin.html         # 管理員座位表介面
 ├── live.html          # 動態牆主頁面
 ├── upload.html        # 上傳主頁面
-├── index.html         # 婚禮網站首頁
-├── images_webp/       # 本地圖檔 (Demo 用)
+├── admin_gas.js       # Google Apps Script 後端程式碼 (需部署至 GAS)
 ├── .env               # 環境變數 (API Keys)
-└── vite.config.js     # Vite 設定檔
+└── vite.config.js     # Vite 多頁面打包設定
 ```
 
 ## 設定步驟 (Setup)
 
 ### 1. 安裝依賴
-請先確認已安裝 Node.js (建議 v18+)。
+確認已安裝 Node.js (建議 v20+)。
 ```bash
 npm install
 ```
 
-### 2. 設定環境變數
-請複製 `.env.example` 建立 `.env` 檔案，並填入您的 Firebase 與 LINE 設定。
+### 2. 環境變數 (.env)
+複製 `.env.example` 建立 `.env` 檔案：
 ```bash
 cp .env.example .env
 ```
+請填寫對應的參數（詳見 `.env.example` 內容）：
+*   **Firebase**: 用於存放照片與留言 (`upload.html` & `live.html`)。
+*   **LINE LIFF**: 用於取得賓客 LINE 暱稱。
+*   **Admin Settings**: 設定後台登入密碼 (`VITE_ADMIN_PASSWORD`) 與 GAS 後端網址 (`VITE_GAS_ADMIN_URL`)。
 
-**`.env` 內容範例：**
-```env
-VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
-VITE_LIFF_ID=your_liff_id
-```
+### 3. Google Apps Script 部署 (座位系統後端)
+1.  建立一個新的 Google 試算表 (Google Sheets)。
+2.  點擊工具列的 `擴充功能` -> `Apps Script`。
+3.  將 `admin_gas.js` 檔案的內容複製貼上。
+4.  點擊 `部署` -> `新增部署作業` -> 類型選擇 `網頁應用程式 (Web App)`。
+5.  設定「執行身分」為您自己，「誰可以存取」設為**所有人**。
+6.  按下部署，授權後取得 **Web App URL** 並填入 `.env` 的 `VITE_GAS_ADMIN_URL`。
 
-### 3. Firebase 設定
-1.  進入 [Firebase Console](https://console.firebase.google.com/) 建立專案。
-2.  **Firestore**: 建立資料庫，並設定規則 (初期測試可設為公開或根據 Auth 限制)。
-3.  **Storage**: 啟用 Storage，並設定 CORS 以允許從您的網域上傳。
-    *   CORS 設定需透過 `gsutil` 或 Google Cloud Console 設定。
+## 啟動服務 (Running Locally)
 
-### 4. LINE Developers 設定 (LIFF)
-1.  進入 [LINE Developers Console](https://developers.line.biz/console/)。
-2.  建立 Provider 與 Channel (LINE Login)。
-3.  啟用 **LIFF** 功能，並新增一個 LIFF App。
-4.  將 LIFF ID 填入 `.env`。
-5.  **Endpoint URL**: 開發時填入 `https://<your-local-ip>:5173/upload.html`，上線後更新為正式網址。
-
-## 啟動網頁 (Running)
-
-### 開發模式 (Development)
 啟動本地伺服器，支援熱更新 (Hot Reload)。
 ```bash
 npm run dev
 ```
-啟動後，請使用瀏覽器開啟顯示的網址 (通常是 `http://localhost:5173`)。
-
+啟動後開啟下方網址 (依您的 port 號為主)：
+*   **首頁**: `http://localhost:5173/`
+*   **座位後台**: `http://localhost:5173/admin.html`
 *   **上傳頁**: `http://localhost:5173/upload.html`
 *   **動態牆**: `http://localhost:5173/live.html`
-*   **動態牆 (Demo模式)**: `http://localhost:5173/live.html?demo=true`
-    *   *Demo 模式會使用 `images_webp` 資料夾內的照片與假資料進行輪播，不需連接 Firebase。*
+    *   *(Live 頁面支援加上 `?demo=true` 來啟動無後端本地圖片輪播模式)*
 
-### 建置生產版本 (Production Build)
-打包程式碼以供部署 (如 Firebase Hosting, Vercel)。
-```bash
-npm run build
-```
-打包後的檔案會產生在 `dist/` 資料夾中。
+## 自動部署 (Deployment)
 
-## 部署 (Deployment)
+專案已整合 **GitHub Actions**，只要推送至 `main` 分支，便會自動進行 Vite Build 並部署至 **GitHub Pages**。
 
-建議使用 **Firebase Hosting**：
+### 部署前設定
+由於 `.env` 不會進 Git，您必須前往 GitHub Repo：
+1.  `Settings` -> `Secrets and variables` -> `Actions`。
+2.  點擊 `New repository secret`，將 `.env` 內的所有 Key-Value 加入 GitHub Secrets 中。
 
-1.  安裝 Firebase CLI: `npm install -g firebase-tools`
-2.  登入: `firebase login`
-3.  初始化: `firebase init hosting` (選擇 `dist` 作為 public directory，並設定為 single-page app: No)
-4.  部署: `firebase deploy`
+### 自定義網域 (Custom Domain)
+請在網域供應商 (例如 GoDaddy, Cloudflare) 設定 DNS 的 **A Record** 指向 GitHub Pages IP（`185.199.108.153` 系列），並確認 `public/CNAME` 內包含您的網域名稱。
+部署後進入 Repo 的 **Settings -> Pages**，等待 DNS 生效後勾選 **Enforce HTTPS** 即可。
