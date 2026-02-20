@@ -15,6 +15,7 @@
 
 const SHEET_NAME_TEMP = 'Seat(temp)';
 const SHEET_NAME_CONFIRM = 'Seat(final)';
+const SHEET_NAME_CONFIG = 'Config';
 
 function getSpreadsheet() {
     return SpreadsheetApp.getActiveSpreadsheet();
@@ -58,9 +59,11 @@ function doGet(e) {
         } else if (action === 'get_confirm') {
             const data = getSheetData(SHEET_NAME_CONFIRM);
             return returnSuccess(data);
+        } else if (action === 'get_config') {
+            return handleGetConfig();
         } else {
             // Default: Return both or return an error depending on your need
-            return returnError("Invalid action for GET. Use ?action=get_temp or ?action=get_confirm");
+            return returnError("Invalid action for GET. Use ?action=get_temp, ?action=get_confirm, or ?action=get_config");
         }
     } catch (error) {
         return returnError(error.toString());
@@ -82,6 +85,8 @@ function doPost(e) {
             return handleSyncConfirmToTemp();
         } else if (action === 'clear_temp') {
             return handleClearTemp();
+        } else if (action === 'save_config') {
+            return handleSaveConfig(postData);
         } else {
             return returnError("Invalid action for POST");
         }
@@ -218,6 +223,49 @@ function handleClearTemp() {
     tempSheet.getRange(1, 1, sourceData.length, sourceData[0].length).setValues(sourceData);
 
     return returnSuccess({ message: "Temp sheet reset successfully" });
+}
+
+// Get Config from Config sheet
+function handleGetConfig() {
+    const ss = getSpreadsheet();
+    const sheet = ss.getSheetByName(SHEET_NAME_CONFIG);
+    if (!sheet) return returnSuccess({});
+
+    const data = sheet.getDataRange().getValues();
+    if (data.length <= 1) return returnSuccess({});
+
+    let config = {};
+    for (let i = 1; i < data.length; i++) {
+        if (data[i][0]) {
+            config[data[i][0]] = data[i][1];
+        }
+    }
+    return returnSuccess(config);
+}
+
+// Save Config to Config sheet
+function handleSaveConfig(data) {
+    const ss = getSpreadsheet();
+    let sheet = ss.getSheetByName(SHEET_NAME_CONFIG);
+    if (!sheet) {
+        sheet = ss.insertSheet(SHEET_NAME_CONFIG);
+    }
+
+    const config = data.config;
+    if (!config) return returnError("No config provided");
+
+    sheet.clear();
+    sheet.appendRow(['Key', 'Value']);
+    const rows = [];
+    for (const key in config) {
+        const value = typeof config[key] === 'object' ? JSON.stringify(config[key]) : config[key];
+        rows.push([key, value]);
+    }
+    if (rows.length > 0) {
+        sheet.getRange(2, 1, rows.length, 2).setValues(rows);
+    }
+
+    return returnSuccess({ message: "Config saved successfully" });
 }
 
 function returnSuccess(data) {

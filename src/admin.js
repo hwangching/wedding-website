@@ -174,8 +174,33 @@ async function initApp() {
     processQueue();
     try {
         setSyncStatus('syncing', '正在讀取... ⏳');
-        const tempRes = await gasRequest('get_temp');
+        const [tempRes, configRes] = await Promise.all([
+            gasRequest('get_temp'),
+            gasRequest('get_config')
+        ]);
+
         console.log('[Admin] get_temp response:', tempRes);
+        console.log('[Admin] get_config response:', configRes);
+
+        // Load config from backend
+        if (configRes.success && configRes.data) {
+            const data = configRes.data;
+            if (data.seatsPerTable) seatsPerTable = parseInt(data.seatsPerTable);
+            if (data.tableCount) tableCount = parseInt(data.tableCount);
+            if (data.tableShape) tableShape = data.tableShape;
+            if (data.tablePositions) savedPositions = JSON.parse(data.tablePositions);
+
+            // Sync to inputs and local storage
+            inputSeats.value = seatsPerTable;
+            inputTables.value = tableCount;
+            inputShape.value = tableShape;
+            localStorage.setItem('adminSeatsPerTable', seatsPerTable);
+            localStorage.setItem('adminTableCount', tableCount);
+            localStorage.setItem('adminTableShape', tableShape);
+            localStorage.setItem('adminTablePositions', JSON.stringify(savedPositions));
+
+            TABLES_CONFIG = generateTablesConfig();
+        }
 
         if (tempRes.success && tempRes.data && tempRes.data.length > 0) {
             allGuests = normalizeGuests(tempRes.data);
@@ -396,7 +421,29 @@ async function processQueue() {
 window.addEventListener('online', processQueue);
 window.addEventListener('offline', () => setSyncStatus('offline', '❌ 離線（已暫存）'));
 
-function setSyncStatus(state, text) { syncStatus.className = `status-badge status-${state}`; syncStatus.textContent = text; }
+function setSyncStatus(type, text) {
+    syncStatus.className = `status-badge status-${type}`;
+    syncStatus.textContent = text;
+}
+
+// Function to sync config to GAS
+function syncConfigToGas() {
+    setSyncStatus('syncing', '正在儲存設定... ⏳');
+    gasRequest('save_config', {
+        config: {
+            seatsPerTable,
+            tableCount,
+            tableShape,
+            tablePositions: JSON.stringify(savedPositions) // Persist positions as string
+        }
+    }).then(res => {
+        if (res.success) {
+            setSyncStatus('saved', '✅ 已同步至草稿');
+        } else {
+            setSyncStatus('offline', '❌ 設定儲存失敗');
+        }
+    }).catch(() => setSyncStatus('offline', '❌ 儲存錯誤'));
+}
 
 // ===== Utilities =====
 searchInput.addEventListener('input', (e) => renderWaitlist(e.target.value));
@@ -463,6 +510,9 @@ document.getElementById('btn-apply-config').addEventListener('click', () => {
     renderTables();
     const shapeLabel = tableShape === 'round' ? '圓桌' : '長桌';
     showToast(`已套用：${tableCount} ${shapeLabel} × ${seatsPerTable} 座`, 'success');
+
+    // Sync config to GAS
+    syncConfigToGas();
 });
 
 // Reset positions to defaults
@@ -472,6 +522,9 @@ document.getElementById('btn-reset-positions').addEventListener('click', () => {
     TABLES_CONFIG = generateTablesConfig();
     renderTables();
     showToast('座標已重置為預設', 'success');
+
+    // Sync config to GAS
+    syncConfigToGas();
 });
 
 // ==========================================================
@@ -539,8 +592,11 @@ document.addEventListener('mouseup', () => {
     const cfg = TABLES_CONFIG.find(t => t.id === tableId);
     if (cfg) { cfg.x = savedPositions[tableId].x; cfg.y = savedPositions[tableId].y; }
 
-    tableDragTarget.style.zIndex = '';
+    tableDragTarget.style.zIndex = '10';
     tableDragTarget = null;
+
+    // Sync to GAS
+    syncConfigToGas();
 });
 
 // ===== Boot =====
