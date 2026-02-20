@@ -16,7 +16,8 @@
     "@line/liff": "^2.27.3",
     "browser-image-compression": "^2.0.2",
     "firebase": "^12.9.0",
-    "gsap": "^3.14.2"
+    "gsap": "^3.14.2",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
     "vite": "^5.4.21"
