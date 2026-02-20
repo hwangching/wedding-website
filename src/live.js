@@ -21,8 +21,10 @@ const emptyState = document.getElementById('empty-state');
 
 let reloadTimer = null; // Timer for auto-refresh on new content
 
-const DANMAKU_TRACKS = 8;
+const DANMAKU_TRACKS = 7;
 let danmakuTrackAvailability = new Array(DANMAKU_TRACKS).fill(0);
+let danmakuTrackOccupied = new Array(DANMAKU_TRACKS).fill(false); // true = a bubble is currently on this track
+let danmakuSequentialIndex = 0;
 
 // Mock Data
 // Mock Data
@@ -35,13 +37,17 @@ let MOCK_MESSAGES = [
     "新婚快樂！！！", "白頭偕老", "永浴愛河"
 ];
 let MOCK_NAMES = ["Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Heidi", "Ivan", "Judy"];
-const MOCK_AVATARS = [
-    "https://api.dicebear.com/7.x/notionists/svg?seed=Alice",
-    "https://api.dicebear.com/7.x/notionists/svg?seed=Bob",
-    "https://api.dicebear.com/7.x/notionists/svg?seed=Charlie",
-    "https://api.dicebear.com/7.x/notionists/svg?seed=David",
-    "https://api.dicebear.com/7.x/notionists/svg?seed=Eve"
-];
+// avatarForName: derive a unique, deterministic avatar URL from the guest's name.
+// Alternates between DiceBear styles so different people also get different shapes.
+const AVATAR_STYLES = ['shapes', 'identicon', 'bottts-neutral', 'rings', 'pixel-art-neutral'];
+function avatarForName(name) {
+    // Simple hash to pick a stable style index for this name
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+    const style = AVATAR_STYLES[hash % AVATAR_STYLES.length];
+    const seed = encodeURIComponent(name);
+    return `https://api.dicebear.com/7.x/${style}/svg?seed=${seed}`;
+}
 
 
 async function init() {
@@ -265,15 +271,17 @@ function createPhotoCard(url) {
 }
 
 async function generateInitData() {
-    // Generate 20 Init Photos
+    // Determine the number of init items to generate without duplications if there are enough KV configs
+    const count = MOCK_KV_DATA.length > 0 ? MOCK_KV_DATA.length : 20;
     const initWishes = [];
-    for (let i = 1; i <= 20; i++) {
+
+    for (let i = 0; i < count; i++) {
         let msg = "";
         let name = "Wedding Team";
 
         // Use KV Data if available
         if (MOCK_KV_DATA.length > 0) {
-            const kv = MOCK_KV_DATA[i % MOCK_KV_DATA.length];
+            const kv = MOCK_KV_DATA[i];
             msg = kv.message;
             name = kv.name;
         } else {
@@ -286,7 +294,7 @@ async function generateInitData() {
             id: `init_${i}`,
             guestName: name,
             message: msg,
-            photoUrls: [`images_webp/live_init/init_${i}.jpg`],
+            photoUrls: [`images_webp/live_init/init_${(i % 20) + 1}.jpg`],
             timestamp: 1000 + i
         });
     }
@@ -367,15 +375,14 @@ function initFirebaseListener() {
         // Start Background Danmaku Loop
         if (!window.danmakuInterval) {
             window.danmakuInterval = setInterval(() => {
-                // Pick from TOP 30
                 if (allWishes.length > 0) {
                     const messageWishes = allWishes.filter(w => w.message);
-                    // Limit random pick to top 8 messages
-                    const topMessages = messageWishes.slice(0, 8);
 
-                    if (topMessages.length > 0) {
-                        const randomWish = topMessages[Math.floor(Math.random() * topMessages.length)];
-                        fireDanmaku(randomWish, false);
+                    if (messageWishes.length > 0) {
+                        // Sequential Selection
+                        const wish = messageWishes[danmakuSequentialIndex % messageWishes.length];
+                        fireDanmaku(wish, false);
+                        danmakuSequentialIndex++;
                     }
                 }
             }, 6000);
@@ -511,58 +518,97 @@ function animateTrackLeftToRight(track, speed) {
     );
 }
 
-function getAvailableTrack() {
-    const now = Date.now();
-    const available = [];
-    for (let i = 0; i < DANMAKU_TRACKS; i++) {
-        if (danmakuTrackAvailability[i] < now) {
-            available.push(i);
+// Returns a starting track index where `tracksNeeded` consecutive tracks are ALL unoccupied.
+function getAvailableTrack(tracksNeeded = 1) {
+    const startIndices = Array.from({ length: DANMAKU_TRACKS - tracksNeeded + 1 }, (_, i) => i)
+        .sort(() => Math.random() - 0.5); // Randomize vertical position
+    for (const start of startIndices) {
+        let allFree = true;
+        for (let j = 0; j < tracksNeeded; j++) {
+            if (danmakuTrackOccupied[start + j]) {
+                allFree = false;
+                break;
+            }
         }
+        if (allFree) return start;
     }
-    if (available.length === 0) return -1;
-    return available[Math.floor(Math.random() * available.length)];
+    return -1; // Every track is busy
+}
+
+function occupyTracks(startTrack, count) {
+    for (let j = 0; j < count; j++) {
+        if (startTrack + j < DANMAKU_TRACKS) danmakuTrackOccupied[startTrack + j] = true;
+    }
+}
+
+function freeTracks(startTrack, count) {
+    for (let j = 0; j < count; j++) {
+        if (startTrack + j < DANMAKU_TRACKS) danmakuTrackOccupied[startTrack + j] = false;
+    }
 }
 
 function fireDanmaku(wishData, isImportant = false, onCompleteCallback = null) {
     const text = typeof wishData === 'string' ? wishData : wishData.message;
     const name = typeof wishData === 'string' ? "Guest" : wishData.guestName;
-    const avatar = MOCK_AVATARS[Math.floor(Math.random() * MOCK_AVATARS.length)];
+    const avatar = avatarForName(name); // Unique per name, consistent on repeats
 
-    const trackIndex = getAvailableTrack();
+    // Measure bubble height with an off-screen ghost element
+    const ghost = document.createElement('div');
+    ghost.className = `danmaku-item ${isImportant ? 'h1' : ''}`;
+    ghost.style.cssText = 'position:fixed;visibility:hidden;top:-9999px;left:0;pointer-events:none;';
+    ghost.innerHTML = `
+        <img class="avatar" src="${avatar}" />
+        <div class="content">
+            <div class="name">${name}</div>
+            <div class="message">${text}</div>
+        </div>
+    `;
+    document.body.appendChild(ghost);
+    const bubbleH = ghost.offsetHeight;
+    document.body.removeChild(ghost);
+
+    // How many tracks does this bubble physically span?
+    const trackHeightPx = window.innerHeight * 0.85 / DANMAKU_TRACKS;
+    const tracksNeeded = Math.max(1, Math.ceil(bubbleH / trackHeightPx));
+
+    const trackIndex = getAvailableTrack(tracksNeeded);
     if (trackIndex === -1) {
-        // If track is busy, retry soon if important? Or just drop.
-        // If we drop, callback never fires. recursion stops.
-        // Let's force callback if we drop so chain continues?
+        // All tracks full — skip and let loop try again next cycle
         if (onCompleteCallback) onCompleteCallback();
         return;
     }
 
+    // Immediately mark tracks as occupied
+    occupyTracks(trackIndex, tracksNeeded);
+
     const el = document.createElement('div');
     el.className = `danmaku-item ${isImportant ? 'h1' : ''}`;
-
     el.innerHTML = `
         <img class="avatar" src="${avatar}" />
-        <span>${name}: ${text}</span>
+        <div class="content">
+            <div class="name">${name}</div>
+            <div class="message">${text}</div>
+        </div>
     `;
 
     danmakuLayer.appendChild(el);
 
-    const trackHeight = 100 / DANMAKU_TRACKS;
-    const top = (trackIndex * trackHeight) + (Math.random() * (trackHeight / 4));
-    el.style.top = `${top}%`;
-
-    danmakuTrackAvailability[trackIndex] = Date.now() + 12000;
+    const trackHeightPct = 85 / DANMAKU_TRACKS;
+    el.style.top = `${5 + trackIndex * trackHeightPct}%`;
 
     const duration = DANMAKU_DURATION_MIN + Math.random() * (DANMAKU_DURATION_MAX - DANMAKU_DURATION_MIN);
+    const totalTravel = window.innerWidth + el.offsetWidth + 100;
 
     gsap.fromTo(el,
         { x: window.innerWidth + 50 },
         {
-            x: -500,
+            x: -(el.offsetWidth + 50),
             duration: duration,
             ease: "none",
             onComplete: () => {
                 el.remove();
+                // FREE the tracks only when the bubble has fully exited
+                freeTracks(trackIndex, tracksNeeded);
                 if (onCompleteCallback) onCompleteCallback();
             }
         }

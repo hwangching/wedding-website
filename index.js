@@ -1,34 +1,34 @@
-function music(){
-  const musiconoroff = document.getElementById('music-onoroff');
-  const musicoffline = document.getElementById('music-off-line');
-  const themusic = document.getElementById('bgm');
+function music() {
+    const musiconoroff = document.getElementById('music-onoroff');
+    const musicoffline = document.getElementById('music-off-line');
+    const themusic = document.getElementById('bgm');
 
-  if (themusic.paused) {
-    themusic.play()
-      .then(() => {
-        musicoffline.classList.add("playmusic");
-        musiconoroff.style.display = "none";
-      })
-      .catch(err => {
-        console.warn("音樂播放被瀏覽器拒絕：", err);
-        alert("瀏覽器阻擋了自動播放，請再點一次「是」開啟音樂");
-      });
-  } else {
-    themusic.pause();
-    musicoffline.classList.remove("playmusic");
-  }
+    if (themusic.paused) {
+        themusic.play()
+            .then(() => {
+                musicoffline.classList.add("playmusic");
+                musiconoroff.style.display = "none";
+            })
+            .catch(err => {
+                console.warn("音樂播放被瀏覽器拒絕：", err);
+                alert("瀏覽器阻擋了自動播放，請再點一次「是」開啟音樂");
+            });
+    } else {
+        themusic.pause();
+        musicoffline.classList.remove("playmusic");
+    }
 }
 
 
 function JumpTo(id) {
     var jumpto = document.getElementById(id);
-    jumpto.scrollIntoView({ block: 'start' , behavior: 'smooth' });
+    jumpto.scrollIntoView({ block: 'start', behavior: 'smooth' });
 }
 
 //
-function reveal(){
+function reveal() {
     var reveals = document.querySelectorAll(".countdown-area-box>div,.half-circle,.traffic-map,.time,.invite-content p,.invite-content h1,.introbox p,.introbox h1,.introline,.sibling-bubble")
-    for (var i = 0; i < reveals.length; i++){
+    for (var i = 0; i < reveals.length; i++) {
         var windowHeight = window.innerHeight;
         var elementTop = reveals[i].getBoundingClientRect().top;
         var elementVisible = 150;
@@ -39,12 +39,12 @@ function reveal(){
         }
     }
 }
-window.addEventListener("scroll",reveal)
+window.addEventListener("scroll", reveal)
 reveal();
 //
-function revealbg2(){
+function revealbg2() {
     var revealbg2 = document.querySelectorAll(".schedule")
-    for (var i = 0; i < revealbg2.length; i++){
+    for (var i = 0; i < revealbg2.length; i++) {
         var windowHeight = window.innerHeight;
         var elementTop = revealbg2[i].getBoundingClientRect().top;
         var elementVisible = 0;
@@ -55,11 +55,11 @@ function revealbg2(){
         }
     }
 }
-window.addEventListener("scroll",revealbg2)
-  
-function revealbg3(){
+window.addEventListener("scroll", revealbg2)
+
+function revealbg3() {
     var revealbg3 = document.querySelectorAll(".RSVP")
-    for (var i = 0; i < revealbg3.length; i++){
+    for (var i = 0; i < revealbg3.length; i++) {
         var windowHeight = window.innerHeight;
         var elementTop = revealbg3[i].getBoundingClientRect().top;
         var elementVisible = 0;
@@ -70,23 +70,23 @@ function revealbg3(){
         }
     }
 }
-window.addEventListener("scroll",revealbg3)
+window.addEventListener("scroll", revealbg3)
 
-function showgallery(id){
+function showgallery(id) {
     document.getElementById(id).style.display = "block";
     document.getElementById("gallery").style.display = "block";
     document.getElementById("closebutton").style.display = "block";
 
-    if ( document.getElementById('video').style.display == "block" ) {
+    if (document.getElementById('video').style.display == "block") {
         let musicoffline = document.getElementById('music-off-line'),
-        themusic = document.querySelector("audio");
-        
+            themusic = document.querySelector("audio");
+
         themusic.pause();
         musicoffline.classList.remove("playmusic");
     };
 }
 
-function closegallery(){
+function closegallery() {
     document.getElementById("gallery").style.display = "none";
     document.getElementById("closebutton").style.display = "none";
     document.getElementById("photo-gallery").style.display = "none";
@@ -94,209 +94,182 @@ function closegallery(){
 
     const iframeVideos = document.querySelectorAll("iframe");
     if (iframeVideos.length > 0) {
-      iframeVideos.forEach((iframe) => {
-        if (iframe.contentWindow) {
-          if (iframe.src.startsWith("https://player.vimeo.com/")) {
-            iframe.contentWindow.postMessage('{"method":"pause"}', "*");
-          }
-        }
-      });
+        iframeVideos.forEach((iframe) => {
+            if (iframe.contentWindow) {
+                if (iframe.src.startsWith("https://player.vimeo.com/")) {
+                    iframe.contentWindow.postMessage('{"method":"pause"}', "*");
+                }
+            }
+        });
     };
 }
 
 //form
-function AttendFunction(id){
+function AttendFunction(id) {
     let Form1 = document.getElementById(id),
-    notAttend = Form1.querySelectorAll(".not-attend"),
-    ATTEND = Form1["ATTEND"],
-    ADULT = Form1["ADULT"],
-    KID = Form1["KID"];
-    // VEGAN = Form1["VEGAN"];
+        notAttend = Form1.querySelectorAll(".not-attend"),
+        ATTEND = Form1["ATTEND"],
+        ADULT = Form1["ADULT"],
+        KID = Form1["KID"];
 
-
-    if ( ATTEND.value == "出席" || ATTEND.value == "" ){
+    if (ATTEND.value == "出席" || ATTEND.value == "") {
         ADULT.value = "";
         KID.value = "";
-        // VEGAN.value = "";
-    
-        Form1.querySelector(".not-attend-checked").removeAttribute("checked","");
-    
+
+        Form1.querySelector(".not-attend-checked").removeAttribute("checked", "");
+
         notAttend.forEach(noreply => {
             noreply.style.display = "block";
         });
     } else {
         ADULT.value = "0";
         KID.value = "0";
-        // VEGAN.value = "0";
-    
-        Form1.querySelector(".not-attend-checked").setAttribute("checked","");
-    
+
+        Form1.querySelector(".not-attend-checked").setAttribute("checked", "");
+
         const notAttend = Form1.querySelectorAll(".not-attend");
-    
+
         notAttend.forEach(noreply => {
             noreply.style.display = "none";
         });
     };
 }
 
-function InvitationFunction(){
-    let Form1 = document.forms['form1'],
-    INVITATION = Form1["INVITATION"],
-    ADDRESS = Form1["ADDRESS"];
 
-    if ( INVITATION.value == "需要" || INVITATION.value == "" ){  
-        ADDRESS.value = "";
-        ADDRESS.disabled = false;
-    } else {
-        ADDRESS.value = "X";
-        ADDRESS.disabled = true;
-    };
-}
 
-function submitform1(){
+function submitform1() {
     let Form1 = document.getElementById('form1'),
-    NAME = Form1["NAME"].value,
-    EMAIL = Form1["EMAIL"].value,
-    ATTEND = Form1["ATTEND"].value,
-    ADULT = Form1["ADULT"].value,
-    KID = Form1["KID"].value,
-    PHONE = Form1["PHONE"].value,
-    TRAFFIC = Form1["TRAFFIC"].value,
-    // VEGAN = Form1["VEGAN"].value,
-    //INVITATION = Form1["INVITATION"].value,
-    //ADDRESS = Form1["ADDRESS"].value,
-    MESSAGE = Form1["MESSAGE"].value;
+        NAME = Form1["NAME"].value,
+        EMAIL = Form1["EMAIL"].value,
+        ATTEND = Form1["ATTEND"].value,
+        ADULT = Form1["ADULT"].value,
+        KID = Form1["KID"].value,
+        PHONE = Form1["PHONE"].value,
+        TRAFFIC = Form1["TRAFFIC"].value,
+        MESSAGE = Form1["MESSAGE"].value;
 
-    if(NAME === "" ){
-        document.getElementById('Name').scrollIntoView({ block: 'center' , behavior: 'smooth' });
+    if (NAME === "") {
+        document.getElementById('Name').scrollIntoView({ block: 'center', behavior: 'smooth' });
         alert('請填寫姓名');
-    } else if( ATTEND === "出席" &&  ADULT === "" ){
-        document.getElementById('Adult').scrollIntoView({ block: 'center' , behavior: 'smooth' });
+    } else if (ATTEND === "出席" && ADULT === "") {
+        document.getElementById('Adult').scrollIntoView({ block: 'center', behavior: 'smooth' });
         alert('請回答大人人數');
-    } else if( ATTEND === "出席" && KID === "" ){
-        document.getElementById('Kid').scrollIntoView({ block: 'center' , behavior: 'smooth' });
+    } else if (ATTEND === "出席" && KID === "") {
+        document.getElementById('Kid').scrollIntoView({ block: 'center', behavior: 'smooth' });
         alert('請回答小孩人數');
-    } else if( ATTEND === "出席" && PHONE === "" ){
-        document.getElementById('Phone').scrollIntoView({ block: 'center' , behavior: 'smooth' });
+    } else if (ATTEND === "出席" && PHONE === "") {
+        document.getElementById('Phone').scrollIntoView({ block: 'center', behavior: 'smooth' });
         alert('請填寫聯絡電話');
-    } else if( TRAFFIC === "" ){
-        document.getElementById('Traffic').scrollIntoView({ block: 'center' , behavior: 'smooth' });
+    } else if (TRAFFIC === "") {
+        document.getElementById('Traffic').scrollIntoView({ block: 'center', behavior: 'smooth' });
         alert('請問預計要如何抵達');
-    
-    // } else if( VEGAN === "" ){
-    //     document.getElementById('Vegan').scrollIntoView({ block: 'center' , behavior: 'smooth' });
-    //     alert('請問是否有素食需求');
-    // } else if( INVITATION === "" ){
-    //     document.getElementById('Invitation').scrollIntoView({ block: 'center' , behavior: 'smooth' });
-    //     alert('請問是否需要紙本喜帖');
-    // } else if( ADDRESS === "" ){
-    //     document.getElementById('Address').scrollIntoView({ block: 'center' , behavior: 'smooth' });
-    //     alert('請留下喜帖收件地址');
+
+
     } else if (ATTEND === "出席" && EMAIL === "") {
-        document.getElementById('Email').scrollIntoView({ block: 'center' , behavior: 'smooth' });
+        document.getElementById('Email').scrollIntoView({ block: 'center', behavior: 'smooth' });
         alert('請填寫 Email');
     } else if (ATTEND === "出席" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(EMAIL)) {
-        document.getElementById('Email').scrollIntoView({ block: 'center' , behavior: 'smooth' });
+        document.getElementById('Email').scrollIntoView({ block: 'center', behavior: 'smooth' });
         alert('Email 格式不正確');
-    }else{
+    } else {
         function addZero(i) {
-            if (i < 10) {i = "0" + i}
+            if (i < 10) { i = "0" + i }
             return i;
         }
-        
+
         const today = new Date(),
-        year = today.getFullYear(),
-        month = today.getMonth()+1,
-        day = today.getDate(),
-        h = addZero(today.getHours()),
-        m = addZero(today.getMinutes()),
-        s = addZero(today.getSeconds()),
-        time = h + ":" + m + ":" + s,
-        SUBMITTIME = year+"/"+month+"/"+day+" "+time;
+            year = today.getFullYear(),
+            month = today.getMonth() + 1,
+            day = today.getDate(),
+            h = addZero(today.getHours()),
+            m = addZero(today.getMinutes()),
+            s = addZero(today.getSeconds()),
+            time = h + ":" + m + ":" + s,
+            SUBMITTIME = year + "/" + month + "/" + day + " " + time;
 
         document.getElementById('loading').style.display = "block";
-        
+
         $.ajax({
-          type: "POST",
-          url: "https://script.google.com/macros/s/AKfycbxPq4ys7M8TJXYp_yZ3TXUJRKi4aeWeFKuQ1wLGG_kWGQJVngh5_Bx0UM6sKN5xTSwK/exec",
-          data: {
-            "SUBMITTIME": SUBMITTIME, 
-            "NAME": NAME, 
-            "ATTEND": ATTEND, 
-            "ADULT": ADULT, 
-            "KID": KID,
-            "PHONE": PHONE,
-            "TRAFFIC": TRAFFIC, 
-            "EMAIL": EMAIL,
-            "MESSAGE": MESSAGE,
-          },
-          contentType: "application/x-www-form-urlencoded",
-          dataType: "JSON",
-          success: function(response){
-            console.log("後端回傳成功內容:", response);
-            if (response.success) {
-              submitform();
-            } else {
-              alert("傳送異常，請再試一次");
-            }
-          },
-          error: function(xhr, status){
-            var errorMsg = xhr.status;
-            console.error("狀態碼:", errorMsg);
-            if (xhr.status === 200) {
-                submitform();
-            } else {
-                var errorMsg = xhr.status;
-                if(errorMsg === 0){
-                    alert('網路異常！請檢查連線後再試一次');
-                } else{
-                    alert ('傳送失敗 (' + xhr.status + ')');
+            type: "POST",
+            url: "https://script.google.com/macros/s/AKfycbxPq4ys7M8TJXYp_yZ3TXUJRKi4aeWeFKuQ1wLGG_kWGQJVngh5_Bx0UM6sKN5xTSwK/exec",
+            data: {
+                "SUBMITTIME": SUBMITTIME,
+                "NAME": NAME,
+                "ATTEND": ATTEND,
+                "ADULT": ADULT,
+                "KID": KID,
+                "PHONE": PHONE,
+                "TRAFFIC": TRAFFIC,
+                "EMAIL": EMAIL,
+                "MESSAGE": MESSAGE,
+            },
+            contentType: "application/x-www-form-urlencoded",
+            dataType: "JSON",
+            success: function (response) {
+                console.log("後端回傳成功內容:", response);
+                if (response.success) {
+                    submitform();
+                } else {
+                    alert("傳送異常，請再試一次");
                 }
+            },
+            error: function (xhr, status) {
+                var errorMsg = xhr.status;
+                console.error("狀態碼:", errorMsg);
+                if (xhr.status === 200) {
+                    submitform();
+                } else {
+                    var errorMsg = xhr.status;
+                    if (errorMsg === 0) {
+                        alert('網路異常！請檢查連線後再試一次');
+                    } else {
+                        alert('傳送失敗 (' + xhr.status + ')');
+                    }
+                }
+            },
+            complete: function () {
+                document.getElementById('loading').style.display = "none";
             }
-          },
-          complete: function(){
-            document.getElementById('loading').style.display = "none";
-          }
         });
     }
-}  
+}
 
 
 
-function submitform(){
+function submitform() {
     const submitsuccess = document.getElementById('submit-success');
     submitsuccess.style.display = "flex";
 }
 
-function submitok(){
+function submitok() {
     window.location.reload();
 }
 
 //
 var TheDay = new Date("June 6, 2026 12:00:00").getTime();
 
-var x = setInterval(function() {
+var x = setInterval(function () {
 
-  var now = new Date().getTime();
-  var distance = TheDay - now;
-  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-    
-  document.getElementById("days").innerHTML = days;
-  document.getElementById("hours").innerHTML = hours;
-  document.getElementById("mins").innerHTML = minutes;
-  document.getElementById("secs").innerHTML = seconds;
-  
-  document.getElementById("countdown").innerHTML = "距離婚禮還剩 " + days + " 天<br>" + hours + " 小時 "
-  + minutes + " 分鐘 " + seconds + " 秒<br>讓我們一起期待吧！";
-    
-  if (distance < 0) {
-    clearInterval(x);
-    document.getElementById("countdown-area").innerHTML = "<h1>Countdown</h1><br>IT'S TIME TO CELEBRATE !";
-    document.getElementById("countdown").innerHTML = "LET'S CELEBRATE !";
-  }
+    var now = new Date().getTime();
+    var distance = TheDay - now;
+    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    document.getElementById("days").innerHTML = days;
+    document.getElementById("hours").innerHTML = hours;
+    document.getElementById("mins").innerHTML = minutes;
+    document.getElementById("secs").innerHTML = seconds;
+
+    document.getElementById("countdown").innerHTML = "距離婚禮還剩 " + days + " 天<br>" + hours + " 小時 "
+        + minutes + " 分鐘 " + seconds + " 秒<br>讓我們一起期待吧！";
+
+    if (distance < 0) {
+        clearInterval(x);
+        document.getElementById("countdown-area").innerHTML = "<h1>Countdown</h1><br>IT'S TIME TO CELEBRATE !";
+        document.getElementById("countdown").innerHTML = "LET'S CELEBRATE !";
+    }
 }, 1000);
 
 
@@ -321,7 +294,7 @@ function addToGoogleCalendar() {
     const dates = `&dates=${eventConfig.startUTC}/${eventConfig.endUTC}`;
     const details = `&details=${encodeURIComponent(eventConfig.description)}`;
     const location = `&location=${encodeURIComponent(eventConfig.location)}`;
-    
+
     const fullUrl = `${baseUrl}${text}${dates}${details}${location}`;
     window.open(fullUrl, '_blank');
 }
@@ -361,7 +334,7 @@ END:VCALENDAR`.trim();
 }
 
 // Bind the click event for the ICS button after DOM loads
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const icsBtn = document.getElementById("ics-download-btn");
     if (icsBtn) {
         icsBtn.addEventListener("click", downloadICS);

@@ -14,7 +14,8 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #f5f5f7;
+            background-color: rgb(222, 211, 201);
+            font-family: 'Aboreto', 'Noto Serif TC', serif;
         }
 
         #app {
@@ -33,7 +34,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #f0f0f0;
+            background-color: transparent;
             z-index: 0;
         }
 
@@ -146,26 +147,53 @@
         /* Tag Style Message */
         .danmaku-item {
             position: absolute;
-            white-space: nowrap;
-            color: #333;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 8px 16px;
+            max-width: 450px;
+            color: #5c534b;
+            background: rgba(255, 255, 255, 0.85);
+            /* Slightly less transparent for readability */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 12px 20px;
             border-radius: 20px;
-            font-size: 1.1rem;
-            font-weight: 500;
-            font-family: "Noto Serif TC", serif;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            font-family: 'Aboreto', 'Noto Serif TC', serif;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             display: flex;
-            align-items: center;
-            gap: 8px;
+            align-items: flex-start;
+            gap: 12px;
             will-change: transform;
         }
 
         .danmaku-item img.avatar {
-            width: 24px;
-            height: 24px;
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            background: #ddd;
+            background: #e3deda;
+            margin-top: 2px;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .danmaku-item .content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .danmaku-item .name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #8c8177;
+            letter-spacing: 1px;
+        }
+
+        .danmaku-item .message {
+            font-size: 1.1rem;
+            font-weight: 600;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
         }
 
         .danmaku-item.h1 {
@@ -208,7 +236,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: #f5f5f7;
+            background: transparent;
             color: #999;
         }
     </style>

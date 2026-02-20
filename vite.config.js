@@ -8,6 +8,7 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         upload: resolve(__dirname, 'upload.html'),
         live: resolve(__dirname, 'live.html'),
+        admin: resolve(__dirname, 'admin.html'),
       },
     },
   },

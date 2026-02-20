@@ -59,8 +59,8 @@ fileInput.addEventListener('change', async (e) => {
 
     try {
         const options = {
-            maxSizeMB: 0.8,
-            maxWidthOrHeight: 1920,
+            maxSizeMB: 0.5,
+            maxWidthOrHeight: 1080,
             useWebWorker: true
         };
         const compressedFile = await imageCompression(file, options);

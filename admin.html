@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>婚宴座位管理系統 | Admin Seat Manager</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Aboreto&family=Noto+Serif+TC:wght@600;900&family=Noto+Sans+TC:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ===== Color Palette — matching main wedding site ===== */
+        :root {
+            --bg: rgb(222, 211, 201);
+            --bg-light: rgb(232, 224, 216);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --border: rgba(104, 97, 92, 0.25);
+            --text: rgb(104, 97, 92);
+            --text-muted: rgb(150, 143, 136);
+            --primary: rgb(104, 97, 92);
+            --primary-hover: rgb(80, 74, 69);
+            --accent: rgb(187, 172, 157);
+            --success: rgb(92, 140, 100);
+            --danger: rgb(180, 80, 70);
+            --warning: rgb(190, 155, 60);
+            --white: rgb(255, 255, 255);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: 'Noto Sans TC', 'Noto Serif TC', sans-serif;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        /* ===== Login ===== */
+        #login-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        #login-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .login-box {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 8px 30px rgba(104, 97, 92, 0.15);
+            text-align: center;
+            border: 1px solid var(--border);
+            width: 90%;
+            max-width: 380px;
+        }
+
+        .login-box h1 {
+            margin: 0 0 0.3rem;
+            color: var(--primary);
+            font-size: 1.4rem;
+            font-family: 'Aboreto', serif;
+            letter-spacing: 3px;
+        }
+
+        .login-box p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            background: rgba(222, 211, 201, 0.3);
+            color: var(--text);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .login-input:focus {
+            border-color: var(--primary);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.7rem;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            letter-spacing: 2px;
+        }
+
+        .login-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .login-btn:active {
+            transform: scale(0.98);
+        }
+
+        .error-msg {
+            color: var(--danger);
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        /* ===== Toolbar ===== */
+        .toolbar {
+            position: relative;
+            z-index: 100;
+            height: 52px;
+            min-height: 52px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.2rem;
+            box-shadow: 0 2px 8px rgba(104, 97, 92, 0.1);
+        }
+
+        .toolbar-title {
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+            letter-spacing: 2px;
+            font-family: 'Aboreto', 'Noto Serif TC', serif;
+        }
+
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-family: 'Noto Sans TC', sans-serif;
+            letter-spacing: 0;
+        }
+
+        .status-saved {
+            background: rgba(92, 140, 100, 0.15);
+            color: var(--success);
+        }
+
+        .status-syncing {
+            background: rgba(190, 155, 60, 0.15);
+            color: var(--warning);
+        }
+
+        .status-offline {
+            background: rgba(180, 80, 70, 0.15);
+            color: var(--danger);
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.4rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            letter-spacing: 1px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            background: rgba(104, 97, 92, 0.08);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        /* ===== Workspace ===== */
+        .workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            width: 220px;
+            min-width: 220px;
+            background: var(--bg-light);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 0.7rem 0.8rem;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .guest-count {
+            background: var(--accent);
+            color: var(--white);
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+        }
+
+        .search-bar {
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.35rem 0.5rem;
+            border-radius: 0.3rem;
+            border: 1px solid var(--border);
+            background: var(--white);
+            color: var(--text);
+            outline: none;
+            font-size: 0.8rem;
+        }
+
+        .guest-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.4rem;
+            gap: 0.3rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== Guest Card ===== */
+        .guest-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 0.4rem;
+            padding: 0.5rem 0.7rem;
+            cursor: grab;
+            user-select: none;
+            transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+        }
+
+        .guest-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(104, 97, 92, 0.15);
+        }
+
+        .guest-card:active {
+            cursor: grabbing;
+        }
+
+        .guest-card.dragging {
+            opacity: 0.5;
+            transform: scale(1.04);
+            z-index: 100;
+        }
+
+        .guest-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .guest-note {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ===== Venue Area ===== */
+        .venue-area {
+            flex: 1;
+            overflow: auto;
+            position: relative;
+            background: var(--bg);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 0.5rem;
+        }
+
+        .floorplan-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 1100px;
+            aspect-ratio: 1.6 / 1;
+            background-image: url('images_webp/floorplan.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 4px;
+        }
+
+        /* ===== Table Overlay ===== */
+        .table-overlay {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+            transform: translate(-50%, -50%);
+        }
+
+        .table-label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--white);
+            background: rgba(104, 97, 92, 0.8);
+            padding: 1px 5px;
+            border-radius: 3px;
+            margin-bottom: 1px;
+            white-space: nowrap;
+            pointer-events: none;
+            text-align: center;
+            letter-spacing: 0;
+        }
+
+        .table-seats {
+            position: relative;
+            display: flex;
+        }
+
+        .table-seats.vertical {
+            flex-direction: row;
+            gap: 1px;
+        }
+
+        .table-seats.vertical .seat-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .table-seats.horizontal {
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .table-seats.horizontal .seat-row {
+            display: flex;
+            flex-direction: row;
+            gap: 1px;
+        }
+
+        /* ===== Seat Slot ===== */
+        .seat-slot {
+            width: 24px;
+            height: 24px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px dashed rgba(104, 97, 92, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .seat-slot:hover,
+        .seat-slot.drag-over {
+            background: rgba(187, 172, 157, 0.5);
+            border-color: var(--primary);
+            border-style: solid;
+        }
+
+        .seat-slot .guest-card {
+            width: 100%;
+            height: 100%;
+            border-radius: 3px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1.5px solid var(--accent);
+            background: var(--white);
+            box-shadow: 0 1px 4px rgba(104, 97, 92, 0.2);
+            overflow: hidden;
+        }
+
+        .seat-slot .guest-card .guest-name {
+            font-size: 0.5rem;
+            margin: 0;
+            text-align: center;
+            line-height: 1;
+            word-break: break-all;
+            padding: 1px;
+        }
+
+        .seat-slot .guest-card .guest-note {
+            display: none;
+        }
+
+        /* ===== Tooltip ===== */
+        .seat-tooltip {
+            position: fixed;
+            background: var(--white);
+            border: 1px solid var(--accent);
+            padding: 0.5rem 0.7rem;
+            border-radius: 0.4rem;
+            box-shadow: 0 6px 16px rgba(104, 97, 92, 0.2);
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.15s;
+            transform: translate(-50%, -120%);
+            white-space: nowrap;
+        }
+
+        .seat-tooltip.show {
+            opacity: 1;
+        }
+
+        .seat-tooltip .name {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.85rem;
+        }
+
+        .seat-tooltip .note {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* ===== Modal ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(222, 211, 201, 0.85);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            transform: translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(104, 97, 92, 0.15);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-title {
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-bottom: 0.7rem;
+            letter-spacing: 2px;
+        }
+
+        .modal-text {
+            color: var(--text-muted);
+            margin-bottom: 1.2rem;
+            line-height: 1.6;
+            font-size: 0.85rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+        }
+
+        /* ===== Loading ===== */
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(104, 97, 92, 0.15);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 0.8rem;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s;
+        }
+
+        /* ===== Toast ===== */
+        .toast-container {
+            position: fixed;
+            bottom: 16px;
+            right: 16px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            background: var(--white);
+            border-left: 4px solid var(--accent);
+            padding: 0.7rem 1rem;
+            border-radius: 0.4rem;
+            box-shadow: 0 4px 12px rgba(104, 97, 92, 0.15);
+            color: var(--text);
+            animation: slideIn 0.3s ease forwards;
+            min-width: 200px;
+            font-size: 0.8rem;
+        }
+
+        .toast.success {
+            border-color: var(--success);
+        }
+
+        .toast.error {
+            border-color: var(--danger);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        /* ===== Settings Panel ===== */
+        .btn-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            padding: 0.35rem 0.55rem;
+            position: relative;
+        }
+
+        .settings-panel {
+            position: fixed;
+            top: 52px;
+            right: 0;
+            width: 280px;
+            background: var(--white);
+            border-left: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            box-shadow: -4px 4px 16px rgba(104, 97, 92, 0.12);
+            z-index: 500;
+            transform: translateX(100%);
+            transition: transform 0.25s ease;
+            border-radius: 0 0 0 8px;
+        }
+
+        .settings-panel.open {
+            transform: translateX(0);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .settings-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 0 4px;
+        }
+
+        .settings-close:hover {
+            color: var(--text);
+        }
+
+        .settings-body {
+            padding: 0.8rem 1rem;
+        }
+
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.7rem;
+        }
+
+        .settings-row label {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .settings-row input[type="number"],
+        .settings-row select {
+            width: 80px;
+            padding: 0.3rem 0.4rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--bg-light);
+            color: var(--text);
+            text-align: center;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .settings-row input[type="number"]:focus,
+        .settings-row select:focus {
+            border-color: var(--primary);
+        }
+
+        .settings-hint {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin: 0.3rem 0 0.6rem;
+            line-height: 1.4;
+        }
+
+        .settings-divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 0.6rem 0;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 38px;
+            height: 20px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: var(--border);
+            border-radius: 20px;
+            transition: 0.25s;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            left: 2px;
+            bottom: 2px;
+            background: var(--white);
+            border-radius: 50%;
+            transition: 0.25s;
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background: var(--success);
+        }
+
+        .toggle-switch input:checked+.toggle-slider::before {
+            transform: translateX(18px);
+        }
+
+        /* ===== Drag Mode ===== */
+        .floorplan-wrapper.drag-mode {
+            outline: 2px dashed var(--accent);
+            outline-offset: 2px;
+        }
+
+        .floorplan-wrapper.drag-mode .table-overlay {
+            cursor: move;
+        }
+
+        .floorplan-wrapper.drag-mode .table-overlay:hover .table-label {
+            background: rgba(92, 140, 100, 0.85);
+        }
+
+        .floorplan-wrapper.drag-mode .seat-slot {
+            pointer-events: none;
+        }
+
+        .drag-mode-banner {
+            display: none;
+            background: rgba(92, 140, 100, 0.12);
+            border: 1px solid var(--success);
+            color: var(--success);
+            text-align: center;
+            padding: 4px 0;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .drag-mode-banner.active {
+            display: block;
+        }
+
+        /* ===== Round Table ===== */
+        .table-seats.round {
+            position: relative;
+            width: 64px;
+            height: 64px;
+        }
+
+        .table-seats.round .seat-slot {
+            position: absolute;
+        }
+
+        .table-seats.round .round-center {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(104, 97, 92, 0.12);
+            border: 1px solid var(--border);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="initial-loader" class="loading-screen">
+        <div class="spinner"></div>
+        <div style="color: var(--text-muted);">載入座位資料中...</div>
+    </div>
+
+    <div id="login-overlay">
+        <div class="login-box">
+            <h1>SEAT MANAGER</h1>
+            <p>請輸入密碼以進入排位系統</p>
+            <div id="login-error" class="error-msg">密碼錯誤</div>
+            <input type="password" id="admin-password" class="login-input" placeholder="密碼" autocomplete="off" />
+            <button id="login-btn" class="login-btn">登入</button>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <div class="toolbar-title">
+            <span>Seat Manager</span>
+            <span id="sync-status" class="status-badge status-saved">✅ 已同步至草稿</span>
+        </div>
+        <div class="toolbar-actions">
+            <button id="btn-reset" class="btn btn-outline">↺ 重置草稿</button>
+            <button id="btn-publish" class="btn btn-primary">確認發佈</button>
+            <button id="btn-settings" class="btn btn-outline btn-icon" title="場地設定">⚙</button>
+        </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settings-panel" class="settings-panel">
+        <div class="settings-header">
+            <span>場地設定</span>
+            <button class="settings-close" id="settings-close">✕</button>
+        </div>
+        <div class="settings-body">
+            <div class="settings-row">
+                <label>每桌座位數</label>
+                <input type="number" id="input-seats" min="2" max="12" value="6">
+            </div>
+            <div class="settings-row">
+                <label>桌數（不含主桌）</label>
+                <input type="number" id="input-tables" min="1" max="50" value="25">
+            </div>
+            <div class="settings-row">
+                <label>桌型</label>
+                <select id="input-shape">
+                    <option value="long" selected>長桌</option>
+                    <option value="round">圓桌</option>
+                </select>
+            </div>
+            <div class="settings-row">
+                <button id="btn-apply-config" class="btn btn-primary" style="width:100%;">套用桌次設定</button>
+            </div>
+            <hr class="settings-divider">
+            <div class="settings-row">
+                <label>桌位拖拉調整</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="drag-mode-toggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <p class="settings-hint">開啟後可直接拖拉桌子至底圖正確位置。</p>
+            <div class="settings-row">
+                <button id="btn-reset-positions" class="btn btn-outline"
+                    style="width:100%; font-size:0.75rem;">重置座標為預設</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Drag Mode Banner -->
+    <div id="drag-banner" class="drag-mode-banner">📐 桌位調整模式：拖拉桌子至正確位置</div>
+
+    <div class="workspace">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span>待排座位賓客</span>
+                <span id="unassigned-count" class="guest-count">0</span>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="search-guest" placeholder="搜尋賓客姓名...">
+            </div>
+            <div id="guest-list-container" class="guest-list" ondragover="handleDragOver(event)"
+                ondrop="handleDropToWaitlist(event)">
+            </div>
+        </aside>
+
+        <main class="venue-area" id="venue-area">
+            <div class="floorplan-wrapper" id="floorplan-wrapper">
+            </div>
+        </main>
+    </div>
+
+    <div id="seat-tooltip" class="seat-tooltip">
+        <div class="name" id="tt-name"></div>
+        <div class="note" id="tt-note"></div>
+    </div>
+
+    <div id="publish-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="modal-title">確定要正式發佈嗎？</h2>
+            <p class="modal-text">這將會覆蓋正式版座位表。發佈後，賓客透過 LINE 查詢時將會看到最新的座位安排。</p>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('publish-modal')">取消</button>
+                <button class="btn btn-primary" id="confirm-publish-btn">確認發佈</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="sync-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="modal-title">發現現有資料</h2>
+            <p class="modal-text">草稿區目前為空，但發現正式區有資料。是否要載入正式資料繼續編輯？</p>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="initEmptyTemp()">從空白開始</button>
+                <button class="btn btn-primary" id="confirm-sync-btn">載入正式資料</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="reset-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="modal-title" style="color: var(--danger);">重置草稿確認</h2>
+            <p class="modal-text">確定要將所有賓客移回「待排座位區」嗎？此操作僅影響草稿，未點擊「確認發佈」前不會影響正式資料。</p>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('reset-modal')">取消</button>
+                <button class="btn btn-outline" style="color: var(--danger); border-color: var(--danger);"
+                    id="confirm-reset-btn">確定重置</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+    <script type="module" src="/src/admin.js"></script>
+</body>
+
+</html>
