@@ -426,24 +426,37 @@ function setSyncStatus(type, text) {
     syncStatus.textContent = text;
 }
 
-// Function to sync config to GAS
-function syncConfigToGas() {
-    setSyncStatus('syncing', '正在儲存設定... ⏳');
-    gasRequest('save_config', {
-        config: {
-            seatsPerTable,
-            tableCount,
-            tableShape,
-            tablePositions: JSON.stringify(savedPositions) // Persist positions as string
-        }
-    }).then(res => {
+// Function to sync config to GAS (called manually by button)
+async function syncConfigToGas() {
+    setSyncStatus('syncing', '正在儲存桌次配置... ⏳');
+    try {
+        const res = await gasRequest('save_config', {
+            config: {
+                seatsPerTable: String(seatsPerTable),
+                tableCount: String(tableCount),
+                tableShape: tableShape,
+                tablePositions: JSON.stringify(savedPositions)
+            }
+        });
+        console.log('[Admin] save_config response:', res);
         if (res.success) {
             setSyncStatus('saved', '✅ 已同步至草稿');
+            showToast('💾 桌次配置已儲存至 Google 試算表！', 'success');
         } else {
             setSyncStatus('offline', '❌ 設定儲存失敗');
+            showToast('儲存失敗：' + (res.error || '未知錯誤'), 'error');
         }
-    }).catch(() => setSyncStatus('offline', '❌ 儲存錯誤'));
+    } catch (err) {
+        console.error('[Admin] save_config error:', err);
+        setSyncStatus('offline', '❌ 儲存錯誤');
+        showToast('儲存失敗，請檢查網路連線', 'error');
+    }
 }
+
+// Save Config Button
+document.getElementById('btn-save-config').addEventListener('click', () => {
+    syncConfigToGas();
+});
 
 // ===== Utilities =====
 searchInput.addEventListener('input', (e) => renderWaitlist(e.target.value));
@@ -509,10 +522,7 @@ document.getElementById('btn-apply-config').addEventListener('click', () => {
     TABLES_CONFIG = generateTablesConfig();
     renderTables();
     const shapeLabel = tableShape === 'round' ? '圓桌' : '長桌';
-    showToast(`已套用：${tableCount} ${shapeLabel} × ${seatsPerTable} 座`, 'success');
-
-    // Sync config to GAS
-    syncConfigToGas();
+    showToast(`已套用：${tableCount} ${shapeLabel} × ${seatsPerTable} 座（請記得按💾儲存）`, 'success');
 });
 
 // Reset positions to defaults
@@ -521,10 +531,7 @@ document.getElementById('btn-reset-positions').addEventListener('click', () => {
     localStorage.removeItem('adminTablePositions');
     TABLES_CONFIG = generateTablesConfig();
     renderTables();
-    showToast('座標已重置為預設', 'success');
-
-    // Sync config to GAS
-    syncConfigToGas();
+    showToast('座標已重置為預設（請記得按💾儲存）', 'success');
 });
 
 // ==========================================================
@@ -594,9 +601,6 @@ document.addEventListener('mouseup', () => {
 
     tableDragTarget.style.zIndex = '10';
     tableDragTarget = null;
-
-    // Sync to GAS
-    syncConfigToGas();
 });
 
 // ===== Boot =====
