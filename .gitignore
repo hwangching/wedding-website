@@ -7,3 +7,9 @@ node_modules/
 .env
 dist/
 .firebase/
+
+# Firebase 匯入工具資料夾（含腳本、金鑰、資料，全部不 commit）
+tools/
+
+# Python cache
+__pycache__/

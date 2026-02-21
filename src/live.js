@@ -166,7 +166,7 @@ async function distributeToTracks() {
     // If there aren't enough real photos, pad with default init photos
     let initIndex = 1;
     while (uniquePhotos.length < 30) {
-        uniquePhotos.push(`/images_webp/live_init/init_${initIndex}.jpg`);
+        uniquePhotos.push(`/images_webp/live_init/init_${initIndex}.webp`);
         initIndex = (initIndex % 20) + 1;
     }
 
