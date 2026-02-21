@@ -49,6 +49,13 @@ function avatarForName(name) {
     return `https://api.dicebear.com/7.x/${style}/svg?seed=${seed}`;
 }
 
+// 取頭像：優先使用 Firestore 存的 lineAvatarUrl，回退 DiceBear
+function avatarForWish(wish) {
+    if (typeof wish === 'string') return avatarForName(wish);
+    if (wish.lineAvatarUrl) return wish.lineAvatarUrl;
+    return avatarForName(wish.guestName || 'guest');
+}
+
 
 async function init() {
     generateQRCode(); // Generate QR Code first
@@ -475,7 +482,7 @@ function freeTracks(startTrack, count) {
 function fireDanmaku(wishData, isImportant = false, onCompleteCallback = null) {
     const text = typeof wishData === 'string' ? wishData : wishData.message;
     const name = typeof wishData === 'string' ? "Guest" : wishData.guestName;
-    const avatar = avatarForName(name); // Unique per name, consistent on repeats
+    const avatar = avatarForWish(wishData); // 優先用 LINE 頭像
 
     // Measure bubble height with an off-screen ghost element
     const ghost = document.createElement('div');

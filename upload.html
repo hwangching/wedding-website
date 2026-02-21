@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>上傳祝福 - Wedding</title>
     <link rel="stylesheet" href="index.css">
+    <!-- LINE LIFF SDK -->
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script:wght@700&display=swap"
         rel="stylesheet">
     <style>
@@ -139,6 +141,50 @@
             display: none;
             padding: 50px 20px;
         }
+
+        /* User profile card */
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(255, 255, 255, 0.45);
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(104, 97, 92, 0.18);
+        }
+
+        .user-card img#avatar-img {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(104, 97, 92, 0.25);
+            flex-shrink: 0;
+            background: #e3deda;
+        }
+
+        .user-card .user-text {
+            font-size: 0.95rem;
+            color: rgb(104, 97, 92);
+            line-height: 1.5;
+        }
+
+        .user-card .user-text strong {
+            font-size: 1.05rem;
+        }
+
+        #liff-badge {
+            display: none;
+            font-size: 0.7rem;
+            background: #06C755;
+            color: #fff;
+            border-radius: 6px;
+            padding: 1px 7px;
+            margin-left: 6px;
+            vertical-align: middle;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -152,8 +198,18 @@
     <div class="container" id="upload-form">
         <h1>送上祝福</h1>
 
+        <!-- 使用者資訊卡 -->
+        <div class="user-card">
+            <img id="avatar-img" src="" alt="頭像">
+            <div class="user-text">
+                你好，<strong id="display-name">訪客</strong>
+                <span id="liff-badge">LINE</span>！
+                <br>請填寫名字並送上您的祝福 ✉️
+            </div>
+        </div>
+
         <div class="form-group">
-            <label for="name">您的名字</label>
+            <label for="name">您的名字 <span style="font-weight:normal;font-size:0.85rem;">(可修改)</span></label>
             <input type="text" id="name" placeholder="請輸入您的名字">
         </div>
 
