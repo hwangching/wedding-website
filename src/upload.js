@@ -41,10 +41,7 @@ function setAvatar(url) {
 // ── 頭像上傳（非 LIFF 模式）───────────────────────────────────────────────
 function enableAvatarUpload() {
     avatarWrapper.classList.add('clickable');
-
-    avatarWrapper.addEventListener('click', () => {
-        avatarUploadInput.click();
-    });
+    // No JS click handler needed — transparent full-cover input handles touch/click natively
 
     avatarUploadInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];

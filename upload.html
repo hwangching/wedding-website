@@ -203,8 +203,30 @@
             display: flex;
         }
 
+        .avatar-wrapper.clickable .avatar-edit-hint {
+            display: flex;
+            /* 手機沒有 hover，永遠顯示 */
+            background: rgba(0, 0, 0, 0.22);
+        }
+
+        .avatar-wrapper.clickable:active .avatar-edit-hint {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
         .avatar-wrapper.clickable:hover img#avatar-img {
             filter: brightness(0.75);
+        }
+
+        /* 透明 file input 覆蓋整個頭像 ─ 最可靠的跨平台觸發方式 */
+        .avatar-wrapper.clickable #avatar-upload {
+            display: block !important;
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            border-radius: 50%;
         }
 
         .user-card .user-text {
