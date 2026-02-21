@@ -50,94 +50,8 @@ function avatarForName(name) {
 }
 
 
-async function loadGoogleSheetMessages() {
-    const SHEET_ID = '1PXMpKRGtniLKp8jbFQdYAsfRfg91ZKXfERiUgQ7qpBM';
-    const GID = '0'; // usually the first tab "表單回應 1"
-    try {
-        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&tq&gid=${GID}`;
-        const response = await fetch(url);
-        if (!response.ok) return false;
-
-        let text = await response.text();
-
-        // Strip out the wrapping callback from visualizer API
-        const prefix = "/*O_o*/\n";
-        if (text.startsWith(prefix)) {
-            text = text.substring(prefix.length);
-        }
-        const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/);
-
-        if (jsonMatch && jsonMatch[1]) {
-            const data = JSON.parse(jsonMatch[1]);
-            if (data.status === 'ok' && data.table && data.table.rows) {
-                const rows = data.table.rows;
-                const cols = data.table.cols;
-
-                let nameIdx = -1;
-                let msgIdx = -1;
-                cols.forEach((c, idx) => {
-                    if (!c.label) return;
-                    const l = c.label.toLowerCase();
-                    if (l.includes('name') || l.includes('名字') || l.includes('姓名')) nameIdx = idx;
-                    if (l.includes('message') || l.includes('祝福') || l.includes('留言')) msgIdx = idx;
-                });
-
-                // Fallback to col 1 (Name) and 2 (Message) if no labels
-                if (nameIdx === -1) nameIdx = 1;
-                if (msgIdx === -1) msgIdx = 2;
-
-                const sheetsData = [];
-                rows.forEach(r => {
-                    const name = r.c[nameIdx] ? r.c[nameIdx].v : '';
-                    const message = r.c[msgIdx] ? r.c[msgIdx].v : '';
-                    if (name && message) {
-                        sheetsData.push({ name: String(name).trim(), message: String(message).trim() });
-                    }
-                });
-
-                if (sheetsData.length > 0) {
-                    MOCK_KV_DATA = sheetsData;
-                    console.log("Loaded Google Sheet messages:", MOCK_KV_DATA.length);
-                    return true;
-                }
-            }
-        }
-    } catch (error) {
-        console.warn("Could not load Google Sheet data.", error);
-    }
-    return false;
-}
-
 async function init() {
     generateQRCode(); // Generate QR Code first
-
-    // Try Google Sheet first
-    const sheetLoaded = await loadGoogleSheetMessages();
-
-    // Fallback to custom messages from JSON file if available and sheet failed
-    if (!sheetLoaded) {
-        try {
-            const response = await fetch('/images_webp/live_init/messages.json');
-            if (response.ok) {
-                const data = await response.json();
-
-                // Check for Key-Value pair array: [{name, message}, ...]
-                if (Array.isArray(data) && data.length > 0 && data[0].name && data[0].message) {
-                    MOCK_KV_DATA = data;
-                    console.log("Loaded Key-Value messages:", MOCK_KV_DATA.length);
-                }
-                // Handle Legacy formats (just in case)
-                else if (Array.isArray(data)) {
-                    MOCK_MESSAGES = data;
-                } else if (data.messages) {
-                    MOCK_MESSAGES = data.messages;
-                    if (data.names) MOCK_NAMES = data.names;
-                }
-            }
-        } catch (error) {
-            console.warn("Could not load messages.json, using defaults.", error);
-        }
-    }
 
     if (IS_DEMO) {
         console.log("✨ Demo Mode: 3 Rows & High Gap ✨");
@@ -249,6 +163,13 @@ async function distributeToTracks() {
 
     const uniquePhotos = Array.from(uniquePhotosSet);
 
+    // If there aren't enough real photos, pad with default init photos
+    let initIndex = 1;
+    while (uniquePhotos.length < 30) {
+        uniquePhotos.push(`/images_webp/live_init/init_${initIndex}.jpg`);
+        initIndex = (initIndex % 20) + 1;
+    }
+
     // User wants "latest 20~30 photos"
     // We strictly limit to 30 photos for the wall
     const latestPhotos = uniquePhotos.slice(0, 30);
@@ -333,62 +254,11 @@ function createPhotoCard(url) {
     return div;
 }
 
-async function generateInitData() {
-    // Determine the number of init items to generate without duplications if there are enough KV configs
-    const count = MOCK_KV_DATA.length > 0 ? MOCK_KV_DATA.length : 20;
-    const initWishes = [];
-
-    for (let i = 0; i < count; i++) {
-        let msg = "";
-        let name = "Wedding Team";
-
-        // Use KV Data if available
-        if (MOCK_KV_DATA.length > 0) {
-            const kv = MOCK_KV_DATA[i];
-            msg = kv.message;
-            name = kv.name;
-        } else {
-            // Fallback
-            msg = MOCK_MESSAGES[i % MOCK_MESSAGES.length];
-            name = "Wedding Team";
-        }
-
-        initWishes.push({
-            id: `init_${i}`,
-            guestName: name,
-            message: msg,
-            photoUrls: [`/images_webp/live_init/init_${(i % 20) + 1}.jpg`],
-            timestamp: 1000 + i
-        });
-    }
-    return initWishes;
-}
-
 function initFirebaseListener() {
-    const q = query(collection(db, 'wishes'), orderBy('timestamp', 'desc'), limit(30));
-
-    // Safety belt REMOVED - User wants continuous smooth play
-    // setInterval(() => window.location.reload(), 10 * 60 * 1000);
+    // Extend limit to 100 to allow more diverse messages to rotate
+    const q = query(collection(db, 'wishes'), orderBy('timestamp', 'desc'), limit(100));
 
     let isFirstLoad = true;
-    let initWishes = [];
-
-    // 1. Load Init Data immediately
-    console.log("Loading init data...");
-    generateInitData().then(data => {
-        console.log("Init data generated:", data.length);
-        initWishes = data;
-        // Initial render with ONLY Init Data (while waiting for Firebase)
-        allWishes = [...initWishes];
-        console.log("Distributing tracks...");
-        distributeToTracks();
-        console.log("Starting App...");
-        startApp();
-    }).catch(e => {
-        console.error("Init failed:", e);
-        alert("Init Error: " + e.message);
-        startApp(); // Force start even if init fails
-    });
 
     onSnapshot(q, (snapshot) => {
         let hasNew = false;
@@ -399,20 +269,12 @@ function initFirebaseListener() {
             currentRealWishes.push({ id: doc.id, ...doc.data() });
         });
 
-        // 2. Merge Real + Init filters
-        // Priority: Real Wishes > Init Wishes. Total 30.
-        const combinedWishes = [...currentRealWishes];
-        if (combinedWishes.length < 30) {
-            const needed = 30 - combinedWishes.length;
-            if (initWishes.length > 0) {
-                combinedWishes.push(...initWishes.slice(0, needed));
-            }
-        }
-        allWishes = combinedWishes;
+        allWishes = currentRealWishes;
 
         if (isFirstLoad) {
-            console.log("Firebase loaded. Merging with Init data.");
+            console.log("Firebase loaded. Distributing tracks...");
             distributeToTracks();
+            startApp();
             isFirstLoad = false;
         } else {
             // Live updates
