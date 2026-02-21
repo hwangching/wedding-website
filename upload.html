@@ -164,6 +164,49 @@
             background: #e3deda;
         }
 
+        /* 頭像可點擊容器（非LIFF模式）*/
+        .avatar-wrapper {
+            position: relative;
+            width: 56px;
+            height: 56px;
+            flex-shrink: 0;
+        }
+
+        .avatar-wrapper img#avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(104, 97, 92, 0.25);
+            background: #e3deda;
+            transition: filter 0.2s;
+        }
+
+        .avatar-wrapper .avatar-edit-hint {
+            display: none;
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.38);
+            color: #fff;
+            font-size: 18px;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .avatar-wrapper.clickable {
+            cursor: pointer;
+        }
+
+        .avatar-wrapper.clickable:hover .avatar-edit-hint {
+            display: flex;
+        }
+
+        .avatar-wrapper.clickable:hover img#avatar-img {
+            filter: brightness(0.75);
+        }
+
         .user-card .user-text {
             font-size: 0.95rem;
             color: rgb(104, 97, 92);
@@ -200,11 +243,17 @@
 
         <!-- 使用者資訊卡 -->
         <div class="user-card">
-            <img id="avatar-img" src="" alt="頭像">
+            <div class="avatar-wrapper" id="avatar-wrapper">
+                <img id="avatar-img" src="" alt="頭像">
+                <div class="avatar-edit-hint">📷</div>
+                <!-- 上傳頭像 input（非LIFF模式才啟用）-->
+                <input type="file" id="avatar-upload" accept="image/*" style="display:none;">
+            </div>
             <div class="user-text">
                 你好，<strong id="display-name">訪客</strong>
                 <span id="liff-badge">LINE</span>！
                 <br>請填寫名字並送上您的祝福 ✉️
+                <br><span id="avatar-hint" style="font-size:0.78rem;opacity:0.65;">點頭像可更換圖片</span>
             </div>
         </div>
 

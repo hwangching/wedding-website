@@ -13,13 +13,18 @@ const loadingOverlay = document.getElementById('loading-overlay');
 const uploadForm = document.getElementById('upload-form');
 const successView = document.getElementById('success-view');
 const avatarImg = document.getElementById('avatar-img');
+const avatarWrapper = document.getElementById('avatar-wrapper');
+const avatarUploadInput = document.getElementById('avatar-upload');
+const avatarHint = document.getElementById('avatar-hint');
 const displayName = document.getElementById('display-name');
 const liffBadge = document.getElementById('liff-badge');
 
 let selectedFiles = [];
-let lineAvatarUrl = ''; // 儲存 LINE 頭像URL（Firestore 用）
+let lineAvatarUrl = '';    // LINE 頭像 URL（LIFF 模式）
+let customAvatarBlob = null; // 使用者自訂頭像（Blob，送出時上傳）
+let isLiffMode = false;
 
-// ── 頭像工具：依名字生成 DiceBear 幾何圖案（與 live.js 一致）────────────
+// ── 頭像工具：DiceBear 幾何圖案（與 live.js 一致）─────────────────────
 const AVATAR_STYLES = ['shapes', 'identicon', 'rings', 'pixel-art-neutral'];
 function defaultAvatarUrl(name) {
     let hash = 0;
@@ -33,83 +38,111 @@ function setAvatar(url) {
     avatarImg.src = url;
 }
 
-// 名字欄位變動時，即時更新預設頭像（只在非LINE模式下）
+// ── 頭像上傳（非 LIFF 模式）───────────────────────────────────────────────
+function enableAvatarUpload() {
+    avatarWrapper.classList.add('clickable');
+
+    avatarWrapper.addEventListener('click', () => {
+        avatarUploadInput.click();
+    });
+
+    avatarUploadInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        loadingOverlay.style.display = 'flex';
+        try {
+            const compressed = await imageCompression(file, {
+                maxSizeMB: 0.3,
+                maxWidthOrHeight: 400,
+                useWebWorker: true
+            });
+            customAvatarBlob = compressed;
+
+            // 預覽
+            const reader = new FileReader();
+            reader.onload = (ev) => setAvatar(ev.target.result);
+            reader.readAsDataURL(compressed);
+
+            // 隱藏提示（已選好圖了）
+            if (avatarHint) avatarHint.style.display = 'none';
+        } catch (err) {
+            console.error('Avatar compression failed', err);
+            alert('頭像處理失敗，請重試');
+        }
+        loadingOverlay.style.display = 'none';
+        avatarUploadInput.value = '';
+    });
+}
+
+// ── 名字欄位：即時更新顯示名稱 & 預設頭像（非 LIFF 且無自訂頭像時）────────
 nameInput.addEventListener('input', () => {
-    if (!lineAvatarUrl) {
+    displayName.textContent = nameInput.value || '訪客';
+    if (!isLiffMode && !customAvatarBlob) {
         setAvatar(defaultAvatarUrl(nameInput.value || 'guest'));
     }
-    displayName.textContent = nameInput.value || '訪客';
 });
 
 // ── LIFF 初始化 ──────────────────────────────────────────────────────────
 const initLIFF = async () => {
     const liffId = import.meta.env.VITE_LIFF_ID;
 
-    // 先設好預設頭像（LIFF 成功後會覆蓋）
+    // 預設頭像
     setAvatar(defaultAvatarUrl('guest'));
 
-    // 如果沒設定 LIFF ID，直接用預設模式
     if (!liffId || liffId === 'your_liff_id') {
-        console.log('未設定 LIFF ID，使用一般模式');
+        // 一般模式：啟用頭像上傳
+        enableAvatarUpload();
         return;
     }
 
     try {
-        // liff 由 CDN 掛在 window 上
         const liffSDK = window.liff;
         if (!liffSDK) throw new Error('LIFF SDK 未載入');
 
         await liffSDK.init({ liffId });
 
         if (liffSDK.isLoggedIn()) {
-            // ✅ LINE 模式：取得 LINE 個人資料
+            // ✅ LINE 模式
+            isLiffMode = true;
             const profile = await liffSDK.getProfile();
 
             nameInput.value = profile.displayName;
             displayName.textContent = profile.displayName;
             lineAvatarUrl = profile.pictureUrl || '';
 
-            if (lineAvatarUrl) {
-                setAvatar(lineAvatarUrl);
-            } else {
-                setAvatar(defaultAvatarUrl(profile.displayName));
-            }
-
-            // 顯示 LINE 徽章
+            setAvatar(lineAvatarUrl || defaultAvatarUrl(profile.displayName));
             liffBadge.style.display = 'inline-block';
+
+            // LINE 模式：不開放點擊換頭像，隱藏提示文字
+            if (avatarHint) avatarHint.style.display = 'none';
+
             console.log('✅ LIFF 登入成功：', profile.displayName);
         } else {
-            // 在 LINE APP 內但未登入（理論上圖文選單不會發生，但保險起見）
-            if (liffSDK.isInClient()) {
-                liffSDK.login();
-            }
+            if (liffSDK.isInClient()) liffSDK.login();
+            else enableAvatarUpload();
         }
     } catch (error) {
-        // LIFF 初始化失敗 → 靜默降級到預設頭像模式
         console.error('LIFF init failed, fallback to default mode.', error);
+        enableAvatarUpload();
     }
 };
 
-// ── 照片選擇 ──────────────────────────────────────────────────────────────
+// ── 祝福照片選擇 ──────────────────────────────────────────────────────────
 fileInput.addEventListener('change', async (e) => {
     const files = Array.from(e.target.files);
-
-    if (files.length > 1) {
-        alert('一次只能上傳 1 張照片');
-        fileInput.value = '';
-        return;
-    }
+    if (files.length > 1) { alert('一次只能上傳 1 張照片'); fileInput.value = ''; return; }
     if (files.length === 0) return;
 
     selectedFiles = [];
     previewArea.innerHTML = '';
     loadingOverlay.style.display = 'flex';
 
-    const file = files[0];
     try {
-        const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1080, useWebWorker: true };
-        const compressedFile = await imageCompression(file, options);
-        selectedFiles.push(compressedFile);
+        const compressed = await imageCompression(files[0], {
+            maxSizeMB: 0.5, maxWidthOrHeight: 1080, useWebWorker: true
+        });
+        selectedFiles.push(compressed);
 
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -118,9 +151,9 @@ fileInput.addEventListener('change', async (e) => {
             div.innerHTML = `<img src="${e.target.result}">`;
             previewArea.appendChild(div);
         };
-        reader.readAsDataURL(compressedFile);
-    } catch (error) {
-        console.error('Compression failed', error);
+        reader.readAsDataURL(compressed);
+    } catch (err) {
+        console.error('Compression failed', err);
         alert('照片處理失敗，請重試');
     }
 
@@ -133,39 +166,36 @@ window.submitForm = async () => {
     const name = nameInput.value.trim();
     const message = messageInput.value.trim();
 
-    if (!name) {
-        alert('請輸入您的名字');
-        return;
-    }
-    if (selectedFiles.length === 0 && !message) {
-        alert('請至少上傳照片或寫下祝福');
-        return;
-    }
+    if (!name) { alert('請輸入您的名字'); return; }
+    if (selectedFiles.length === 0 && !message) { alert('請至少上傳照片或寫下祝福'); return; }
 
     loadingOverlay.style.display = 'flex';
     submitBtn.disabled = true;
 
     try {
-        const photoUrls = [];
+        // 1. 上傳祝福照片
+        const photoUrls = await Promise.all(
+            selectedFiles.map(async (file) => {
+                const fileName = `wishes/${Date.now()}_${Math.random().toString(36).substring(7)}_${file.name}`;
+                const snap = await uploadBytes(ref(storage, fileName), file);
+                return getDownloadURL(snap.ref);
+            })
+        );
 
-        const uploadPromises = selectedFiles.map(async (file) => {
-            const fileName = `wishes/${Date.now()}_${Math.random().toString(36).substring(7)}_${file.name}`;
-            const storageRef = ref(storage, fileName);
-            const snapshot = await uploadBytes(storageRef, file);
-            return await getDownloadURL(snapshot.ref);
-        });
+        // 2. 上傳自訂頭像（非 LIFF 模式且使用者有選圖）
+        let finalAvatarUrl = lineAvatarUrl || defaultAvatarUrl(name);
+        if (!isLiffMode && customAvatarBlob) {
+            const avatarFileName = `avatars/${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
+            const snap = await uploadBytes(ref(storage, avatarFileName), customAvatarBlob);
+            finalAvatarUrl = await getDownloadURL(snap.ref);
+        }
 
-        const uploadedUrls = await Promise.all(uploadPromises);
-        photoUrls.push(...uploadedUrls);
-
-        // 計算最終頭像 URL（LINE 頭像 > 依名字生成的 DiceBear）
-        const finalAvatarUrl = lineAvatarUrl || defaultAvatarUrl(name);
-
+        // 3. 寫入 Firestore
         await addDoc(collection(db, 'wishes'), {
             guestName: name,
-            message: message,
-            photoUrls: photoUrls,
-            lineAvatarUrl: finalAvatarUrl,  // 供 danmaku 使用
+            message,
+            photoUrls,
+            lineAvatarUrl: finalAvatarUrl,
             timestamp: serverTimestamp(),
             userAgent: navigator.userAgent
         });
