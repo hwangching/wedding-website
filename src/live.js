@@ -50,30 +50,93 @@ function avatarForName(name) {
 }
 
 
-async function init() {
-    generateQRCode(); // Generate QR Code first
-
-    // Load custom messages from JSON file if available
+async function loadGoogleSheetMessages() {
+    const SHEET_ID = '1PXMpKRGtniLKp8jbFQdYAsfRfg91ZKXfERiUgQ7qpBM';
+    const GID = '0'; // usually the first tab "表單回應 1"
     try {
-        const response = await fetch('images_webp/live_init/messages.json');
-        if (response.ok) {
-            const data = await response.json();
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&tq&gid=${GID}`;
+        const response = await fetch(url);
+        if (!response.ok) return false;
 
-            // Check for Key-Value pair array: [{name, message}, ...]
-            if (Array.isArray(data) && data.length > 0 && data[0].name && data[0].message) {
-                MOCK_KV_DATA = data;
-                console.log("Loaded Key-Value messages:", MOCK_KV_DATA.length);
-            }
-            // Handle Legacy formats (just in case)
-            else if (Array.isArray(data)) {
-                MOCK_MESSAGES = data;
-            } else if (data.messages) {
-                MOCK_MESSAGES = data.messages;
-                if (data.names) MOCK_NAMES = data.names;
+        let text = await response.text();
+
+        // Strip out the wrapping callback from visualizer API
+        const prefix = "/*O_o*/\n";
+        if (text.startsWith(prefix)) {
+            text = text.substring(prefix.length);
+        }
+        const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/);
+
+        if (jsonMatch && jsonMatch[1]) {
+            const data = JSON.parse(jsonMatch[1]);
+            if (data.status === 'ok' && data.table && data.table.rows) {
+                const rows = data.table.rows;
+                const cols = data.table.cols;
+
+                let nameIdx = -1;
+                let msgIdx = -1;
+                cols.forEach((c, idx) => {
+                    if (!c.label) return;
+                    const l = c.label.toLowerCase();
+                    if (l.includes('name') || l.includes('名字') || l.includes('姓名')) nameIdx = idx;
+                    if (l.includes('message') || l.includes('祝福') || l.includes('留言')) msgIdx = idx;
+                });
+
+                // Fallback to col 1 (Name) and 2 (Message) if no labels
+                if (nameIdx === -1) nameIdx = 1;
+                if (msgIdx === -1) msgIdx = 2;
+
+                const sheetsData = [];
+                rows.forEach(r => {
+                    const name = r.c[nameIdx] ? r.c[nameIdx].v : '';
+                    const message = r.c[msgIdx] ? r.c[msgIdx].v : '';
+                    if (name && message) {
+                        sheetsData.push({ name: String(name).trim(), message: String(message).trim() });
+                    }
+                });
+
+                if (sheetsData.length > 0) {
+                    MOCK_KV_DATA = sheetsData;
+                    console.log("Loaded Google Sheet messages:", MOCK_KV_DATA.length);
+                    return true;
+                }
             }
         }
     } catch (error) {
-        console.warn("Could not load messages.json, using defaults.", error);
+        console.warn("Could not load Google Sheet data.", error);
+    }
+    return false;
+}
+
+async function init() {
+    generateQRCode(); // Generate QR Code first
+
+    // Try Google Sheet first
+    const sheetLoaded = await loadGoogleSheetMessages();
+
+    // Fallback to custom messages from JSON file if available and sheet failed
+    if (!sheetLoaded) {
+        try {
+            const response = await fetch('/images_webp/live_init/messages.json');
+            if (response.ok) {
+                const data = await response.json();
+
+                // Check for Key-Value pair array: [{name, message}, ...]
+                if (Array.isArray(data) && data.length > 0 && data[0].name && data[0].message) {
+                    MOCK_KV_DATA = data;
+                    console.log("Loaded Key-Value messages:", MOCK_KV_DATA.length);
+                }
+                // Handle Legacy formats (just in case)
+                else if (Array.isArray(data)) {
+                    MOCK_MESSAGES = data;
+                } else if (data.messages) {
+                    MOCK_MESSAGES = data.messages;
+                    if (data.names) MOCK_NAMES = data.names;
+                }
+            }
+        } catch (error) {
+            console.warn("Could not load messages.json, using defaults.", error);
+        }
     }
 
     if (IS_DEMO) {
@@ -157,7 +220,7 @@ async function generateMockData() {
     // ... (keep same)
     for (let i = 1; i <= 26; i++) {
         const num = i < 10 ? `0${i}` : i;
-        const imageUrl = `images_webp/gallery-${num}.webp`;
+        const imageUrl = `/images_webp/gallery-${num}.webp`;
         pushWishToMemory({
             id: `mock_${i}`,
             guestName: MOCK_NAMES[Math.floor(Math.random() * MOCK_NAMES.length)],
@@ -294,7 +357,7 @@ async function generateInitData() {
             id: `init_${i}`,
             guestName: name,
             message: msg,
-            photoUrls: [`images_webp/live_init/init_${(i % 20) + 1}.jpg`],
+            photoUrls: [`/images_webp/live_init/init_${(i % 20) + 1}.jpg`],
             timestamp: 1000 + i
         });
     }
