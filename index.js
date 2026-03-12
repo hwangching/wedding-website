@@ -145,6 +145,11 @@ function submitform1() {
         ADULT = Form1["ADULT"].value,
         KID = Form1["KID"].value,
         PHONE = Form1["PHONE"].value,
+        ATTEND_CEREMONY = Form1["ATTEND_CEREMONY"].value,
+        VEGETARIAN = Form1["VEGETARIAN"].value,
+        COMPANION_NAME = Form1["COMPANION_NAME"].value,
+        CHILD_CHAIR = Form1["CHILD_CHAIR"].value,
+        SHUTTLE_BUS = Form1["SHUTTLE_BUS"].value,
         TRAFFIC = Form1["TRAFFIC"].value,
         MESSAGE = Form1["MESSAGE"].value;
 
@@ -199,6 +204,11 @@ function submitform1() {
                 "ADULT": ADULT,
                 "KID": KID,
                 "PHONE": PHONE,
+                "ATTEND_CEREMONY": ATTEND_CEREMONY,
+                "VEGETARIAN": VEGETARIAN,
+                "COMPANION_NAME": COMPANION_NAME,
+                "CHILD_CHAIR": CHILD_CHAIR,
+                "SHUTTLE_BUS": SHUTTLE_BUS,
                 "TRAFFIC": TRAFFIC,
                 "EMAIL": EMAIL,
                 "MESSAGE": MESSAGE,

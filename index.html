@@ -144,11 +144,9 @@
             <h1>Schedule</h1>
             <div id="timeline">
                 <div class="time" id="time1">10:30<br>AM</div>
-                <div class="time" id="time2">11:45<br>AM</div>
-                <div class="time" id="time3">12:00<br>PM</div>
-                <div class="time" id="time5">02:30<br>PM</div>
+                <div class="time" id="time3">11:30<br>PM</div>
+                <div class="time" id="time5">02:00<br>PM</div>
                 <div class="activity" id="activity1">證婚儀式</div>
-                <div class="activity" id="activity2">賓客入場</div>
                 <div class="activity" id="activity3">午宴開始</div>
                 <div class="activity" id="activity5">送客合照</div>
             </div>
@@ -263,51 +261,99 @@
                     <div>
                         <input type="text" id="Name" name="NAME">
                     </div>
-                    <div class="form-title not-attend"><label for="Email">Email（於婚禮前提醒&餐點確認）</label></div>
-                    <div>
-                        <input class="not-attend" type="email" id="Email" name="EMAIL" placeholder="請輸入 Email">
-                    </div>
-                    <div class="form-title not-attend"><label for="Phone">手機(若email聯繫不到時才會聯絡）</label></div>
-                    <div>
-                        <input class="not-attend" type="phone" id="Phone" name="PHONE" placeholder="請輸入 Email">
-                    </div>
-                    <div class="form-title not-attend">參加人數（包含自己）</div>
-                    <div class="AandK not-attend">
-                        <label for="Adult">大人</label>
-                        <select id="Adult" name="ADULT">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                        </select>
-                        <label for="Kid">小孩</label>
-                        <select id="Kid" name="KID">
-                            <option value="0">0</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                        </select>
-                    </div>
-                    <div class="form-title not-attend"><label for="Traffic">預計如何到達</label></div>
-                    <div class="not-attend">
-                        <select id="Traffic" name="TRAFFIC">
-                            <option value="自行開車">自行開車</option>
-                            <option value="大眾運輸">大眾運輸</option>
-                            <option value="計程車">計程車</option>
-                        </select>
-                    </div>
+                    <div class="form-title not-attend"><label for="Email">Email<br><span
+                                style="font-size: 12px; font-weight: normal; color: #666;">（於婚禮前提醒&餐點確認）)</span></label>
+                        <div>
+                            <input class="not-attend" type="email" id="Email" name="EMAIL" placeholder="請輸入 Email">
+                        </div>
+                        <div class="form-title not-attend"><label for="Phone">手機 <br><span
+                                    style="font-size: 12px; font-weight: normal; color: #666;">(若email聯繫不到時才會聯絡)</span></label>
+                        </div>
+                        <div>
+                            <input class="not-attend" type="phone" id="Phone" name="PHONE" placeholder="請輸入 Email">
+                        </div>
+                        <div class="form-title not-attend">參加人數（包含自己）</div>
+                        <div class="AandK not-attend">
+                            <label for="Adult">大人</label>
+                            <select id="Adult" name="ADULT">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                            </select>
+                            <label for="Kid">小孩</label>
+                            <select id="Kid" name="KID">
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                        <div class="form-title not-attend"><label for="AttendCeremony">是否會參加證婚</label></div>
+                        <div class="not-attend">
+                            <select id="AttendCeremony" name="ATTEND_CEREMONY">
+                                <option value="會">會</option>
+                                <option value="不會">不會</option>
+                            </select>
+                        </div>
 
-                </div>
-                <div class="form-title">LEAVE A MESSAGE</div>
-                <textarea name="MESSAGE" rows="15" cols="20" placeholder="留言祝福我們吧!"></textarea>
+                        <div class="form-title not-attend"><label for="Vegetarian">素食人數 <br><span
+                                    style="font-size: 12px; font-weight: normal; color: #666;">(請填寫人名，或留空白)</span></label>
+                        </div>
+                        <div>
+                            <input class="not-attend" type="text" id="Vegetarian" name="VEGETARIAN"
+                                placeholder="例如：AAA, BBB">
+                        </div>
+
+                        <div class="form-title not-attend"><label for="CompanionName">攜伴者名稱 <br><span
+                                    style="font-size: 12px; font-weight: normal; color: #666;">(座位牌使用，若超過一位者用 ,
+                                    區分)</span></label></div>
+                        <div>
+                            <input class="not-attend" type="text" id="CompanionName" name="COMPANION_NAME"
+                                placeholder="例如：AAA, BBB">
+                        </div>
+
+                        <div class="form-title not-attend"><label for="ChildChair">兒童椅人數</label></div>
+                        <div class="not-attend">
+                            <select id="ChildChair" name="CHILD_CHAIR">
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+
+                        <div class="form-title not-attend"><label for="ShuttleBus">是否會有接駁車需求 <br><span
+                                    style="font-size: 12px; font-weight: normal; color: #666;">(預先統計人數，若確定提供會另行通知)</span></label>
+                        </div>
+                        <div class="not-attend">
+                            <select id="ShuttleBus" name="SHUTTLE_BUS">
+                                <option value="無">無</option>
+                                <option value="有">有</option>
+                            </select>
+                        </div>
+
+                        <div class="form-title not-attend"><label for="Traffic">是否開車前往</label></div>
+                        <div class="not-attend">
+                            <select id="Traffic" name="TRAFFIC">
+                                <option value="否">否</option>
+                                <option value="是">是</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="form-title">LEAVE A MESSAGE</div>
+                    <textarea name="MESSAGE" rows="15" cols="20" placeholder="留言祝福我們吧!"></textarea>
             </form>
             <input type="button" value="送出" id="submitbutton" onclick="submitform1()">
 
