@@ -151,6 +151,7 @@ function submitform1() {
         CHILD_CHAIR = Form1["CHILD_CHAIR"].value,
         SHUTTLE_BUS = Form1["SHUTTLE_BUS"].value,
         TRAFFIC = Form1["TRAFFIC"].value,
+        PLATE_NUMBER = Form1["PLATE_NUMBER"].value,
         MESSAGE = Form1["MESSAGE"].value;
 
     if (NAME === "") {
@@ -210,6 +211,7 @@ function submitform1() {
                 "CHILD_CHAIR": CHILD_CHAIR,
                 "SHUTTLE_BUS": SHUTTLE_BUS,
                 "TRAFFIC": TRAFFIC,
+                "PLATE_NUMBER": PLATE_NUMBER,
                 "EMAIL": EMAIL,
                 "MESSAGE": MESSAGE,
             },
