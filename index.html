@@ -345,18 +345,20 @@
 
                         <div class="form-title not-attend"><label for="Traffic">是否開車前往</label></div>
                         <div class="not-attend">
-                            <select id="Traffic" name="TRAFFIC">
+                            <select id="Traffic" name="TRAFFIC" onchange="togglePlateNumber()">
                                 <option value="否">否</option>
                                 <option value="是">是</option>
                             </select>
                         </div>
 
-                        <div class="form-title not-attend"><label for="PlateNumber">車牌號碼 <br><span
-                                    style="font-size: 12px; font-weight: normal; color: #666;">(若開車前往，請提供車牌號碼以利登記)</span></label>
-                        </div>
-                        <div>
-                            <input class="not-attend" type="text" id="PlateNumber" name="PLATE_NUMBER"
-                                placeholder="例如：ABC-1234">
+                        <div id="PlateNumberSection" style="display: none;" class="not-attend">
+                            <div class="form-title"><label for="PlateNumber">車牌號碼 <br><span
+                                        style="font-size: 12px; font-weight: normal; color: #666;">(申請仰德大道通行證用)</span></label>
+                            </div>
+                            <div>
+                                <input type="text" id="PlateNumber" name="PLATE_NUMBER"
+                                    placeholder="例如：ABC-1234">
+                            </div>
                         </div>
 
                     </div>

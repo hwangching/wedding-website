@@ -105,6 +105,21 @@ function closegallery() {
 }
 
 //form
+function togglePlateNumber() {
+    const trafficSelect = document.getElementById("Traffic");
+    const plateSection = document.getElementById("PlateNumberSection");
+    const plateInput = document.getElementById("PlateNumber");
+
+    if (trafficSelect && plateSection) {
+        if (trafficSelect.value === "是") {
+            plateSection.style.display = "block";
+        } else {
+            plateSection.style.display = "none";
+            if (plateInput) plateInput.value = "";
+        }
+    }
+}
+
 function AttendFunction(id) {
     let Form1 = document.getElementById(id),
         notAttend = Form1.querySelectorAll(".not-attend"),
@@ -121,6 +136,8 @@ function AttendFunction(id) {
         notAttend.forEach(noreply => {
             noreply.style.display = "block";
         });
+        
+        togglePlateNumber();
     } else {
         ADULT.value = "0";
         KID.value = "0";
@@ -359,6 +376,7 @@ window.JumpTo = JumpTo;
 window.showgallery = showgallery;
 window.closegallery = closegallery;
 window.AttendFunction = AttendFunction;
+window.togglePlateNumber = togglePlateNumber;
 window.submitform1 = submitform1;
 window.submitok = submitok;
 window.addToGoogleCalendar = addToGoogleCalendar;
