@@ -726,19 +726,23 @@ header a p{
 }
 
 .dress-color.color-1{
-    background-color: rgb(91, 85, 74);
+    background-color: rgb(223, 214, 197);
 }
 
 .dress-color.color-2{
-    background-color: rgb(170, 161, 145);
+    background-color: rgb(201, 190, 171);
 }
 
 .dress-color.color-3{
-    background-color: rgb(201, 190, 172);
+    background-color: rgb(142, 192, 220);
 }
 
 .dress-color.color-4{
-    background-color: rgb(225, 216, 201);
+    background-color: rgb(63, 132, 190);
+}
+
+.dress-color.color-5{
+    background-color: rgb(47, 91, 161);
 }
 
 #traffic{
