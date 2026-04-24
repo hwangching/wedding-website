@@ -684,6 +684,63 @@ header a p{
     grid-area: activity5;
 }
 
+#dress-code{
+    padding: 80px 0;
+    color: rgb(104, 97, 92);
+    background-color: rgb(222, 211, 201);
+    overflow: hidden;
+    text-align: center;
+}
+
+.dress-code-content{
+    width: 90%;
+    max-width: 700px;
+    margin: auto;
+    border: 1px solid rgba(104, 97, 92, 0.35);
+    padding: 50px 20px;
+}
+
+.dress-code-content h1{
+    margin: 0;
+    line-height: 1;
+}
+
+.dress-code-content p{
+    margin: 25px 0 0;
+}
+
+.dress-swatches{
+    margin-top: 35px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.dress-color{
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    border: 1px solid rgba(30, 25, 20, 0.8);
+    box-sizing: border-box;
+}
+
+.dress-color.color-1{
+    background-color: rgb(91, 85, 74);
+}
+
+.dress-color.color-2{
+    background-color: rgb(170, 161, 145);
+}
+
+.dress-color.color-3{
+    background-color: rgb(201, 190, 172);
+}
+
+.dress-color.color-4{
+    background-color: rgb(225, 216, 201);
+}
+
 #traffic{
     color: rgb(104, 97, 92);
     background-color: rgb(222, 211, 201);
@@ -1494,6 +1551,21 @@ footer div a:hover, footer div a:active{
 }
 
 @media screen and (max-width: 768px){ 
+    .dress-code-content{
+        padding: 40px 15px;
+    }
+    .dress-code-content p{
+        font-size: 14px;
+        line-height: 1.7;
+    }
+    .dress-swatches{
+        gap: 14px;
+    }
+    .dress-color{
+        width: 48px;
+        height: 48px;
+    }
+
     #traffic-title h1 {
         font-size: 20px; 
     }
