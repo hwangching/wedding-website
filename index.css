@@ -590,8 +590,7 @@ header a p{
       'time1 activity1'
       'time2 activity2'
       'time3 activity3'
-      'time4 activity4'
-      'time5 activity5';
+      'time4 activity4';
     width: 250px;
     row-gap: 50px;
     justify-content: center;
@@ -660,10 +659,6 @@ header a p{
     grid-area: time4;
 }
 
-#time5{
-    grid-area: time5;
-}
-
 #activity1{
     grid-area: activity1;
 }
@@ -678,10 +673,6 @@ header a p{
 
 #activity4{
     grid-area: activity4;
-}
-
-#activity5{
-    grid-area: activity5;
 }
 
 #dress-code{
@@ -1435,8 +1426,8 @@ footer div a:hover, footer div a:active{
     .introbox::before{ display: none;}
     #timeline{    
         grid-template-areas: 
-        'time1 time2 time3 time4 time5'
-        'activity1 activity2 activity3 activity4 activity5';
+        'time1 time2 time3 time4'
+        'activity1 activity2 activity3 activity4';
         width: 80%;
     }
     #timeline::before{
@@ -1448,7 +1439,6 @@ footer div a:hover, footer div a:active{
     #time2{ animation-delay: 0.3s; }
     #time3{ animation-delay: 0.6s; }
     #time4{ animation-delay: 0.9s; }
-    #time5{ animation-delay: 1.2s; }
     .activity{ 
         writing-mode: vertical-lr;
         align-self: start;
